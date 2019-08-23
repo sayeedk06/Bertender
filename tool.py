@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
 
+
+
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
 
