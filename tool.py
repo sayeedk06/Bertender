@@ -81,3 +81,20 @@ for token_i in range(len(tokenized_text)):
 # Sanity check the dimensions:
 print ("Number of tokens in sequence:", len(token_embeddings))
 print ("Number of layers per token:", len(token_embeddings[0]))
+
+
+# Stores the token vectors, with shape [22 x 768]
+token_vecs_sum = []
+
+# For each token in the sentence...
+for token in token_embeddings:
+    # Sum the vectors from the last four layers.
+    sum_vec = torch.sum(torch.stack(token)[-4:], 0)
+
+    # Use `sum_vec` to represent `token`.
+    token_vecs_sum.append(sum_vec)
+
+print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
+
+
+arr = [t.numpy() for t in token_vecs_sum]
