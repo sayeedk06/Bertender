@@ -1,6 +1,7 @@
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 import logging
+import re
 #visualization
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -113,3 +114,24 @@ for i,x in enumerate(tokenized_text):
 
 tsne_model = TSNE(perplexity=3, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
 new_values = tsne_model.fit_transform(tokens)
+
+
+prop = fm.FontProperties(fname='kalpurush.ttf')
+x = []
+y = []
+for value in new_values:
+    x.append(value[0])
+    y.append(value[1])
+
+plt.figure(figsize=(16, 16))
+for i in range(len(x)):
+    plt.scatter(x[i],y[i])
+    plt.annotate(labels[i],
+            xy=(x[i], y[i]),
+            xytext=(0, 0),
+            textcoords='offset points',
+            ha='right',
+           fontsize=19, fontproperties=prop)
+
+
+plt.show()
