@@ -98,3 +98,18 @@ print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 
 
 arr = [t.numpy() for t in token_vecs_sum]
+
+
+
+"Creates and TSNE model and plots it"
+labels = []
+tokens = []
+
+for i,x in enumerate(tokenized_text):
+    if '#' not in x and '[UNK]' not in x:
+
+        tokens.append(arr[i])
+        labels.append(x)
+
+tsne_model = TSNE(perplexity=3, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
+new_values = tsne_model.fit_transform(tokens)
