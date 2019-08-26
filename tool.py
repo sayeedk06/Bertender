@@ -103,6 +103,11 @@ print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 arr = [t.numpy() for t in token_vecs_sum]
 
 
+def press(event):
+    print('you pressed', event.button, event.xdata, event.ydata)
+
+
+
 
 "Creates and TSNE model and plots it"
 labels = []
@@ -125,7 +130,7 @@ for value in new_values:
     x.append(value[0])
     y.append(value[1])
 
-plt.figure(figsize=(16, 16))
+fig = plt.figure(figsize=(16, 16))
 for i in range(len(x)):
     plt.scatter(x[i],y[i])
     plt.annotate(labels[i],
@@ -134,6 +139,6 @@ for i in range(len(x)):
             textcoords='offset points',
             ha='right',
            fontsize=19, fontproperties=prop)
-
+fig.canvas.mpl_connect('button_press_event', press)
 
 plt.show()

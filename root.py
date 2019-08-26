@@ -113,7 +113,8 @@ class Root(Tk):
 
 
         arr = [t.numpy() for t in token_vecs_sum]
-
+        def press(event):
+            print('you pressed', event.button, event.xdata, event.ydata)
 
 
         "Creates and TSNE model and plots it"
@@ -148,6 +149,7 @@ class Root(Tk):
                    fontsize=19, fontproperties=prop)
 
         canvas = FigureCanvasTkAgg(f, self)
+        f.canvas.mpl_connect('button_press_event', press)
         canvas.draw()
         canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
 
