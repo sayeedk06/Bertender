@@ -109,7 +109,7 @@ def press(event):
 
 
 
-"Creates and TSNE model and plots it"
+"""Creates a TSNE model and plots it"""
 labels = []
 tokens = []
 
@@ -121,8 +121,19 @@ for i,x in enumerate(tokenized_text):
 
 tsne_model = TSNE(perplexity=3, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
 new_values = tsne_model.fit_transform(tokens)
+"""Creation of tsne model ends here"""
+# keeping track of tokens according to sentence
+sentence1 = []
+sentence2 = []
+count = 0
+for i in segments_ids:
+    if(i == 0):
+        sentence1.append(new_values[i])
+    else:
+        sentence2.append(new_values[i])
+# keeping tracks ends here
 
-
+"""plotting starts here"""
 prop = fm.FontProperties(fname='kalpurush.ttf')
 x = []
 y = []
@@ -142,3 +153,4 @@ for i in range(len(x)):
 fig.canvas.mpl_connect('button_press_event', press)
 
 plt.show()
+"""plotting ends here"""
