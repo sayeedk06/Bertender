@@ -12,16 +12,60 @@ from sklearn.manifold import TSNE
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
 
-text = "প্রায় ১৬৭ বছরের পুরোনো এই বিদ্যালয়টি বিশ্ববিদ্যালয়ের অংশ হলে এর ঐতিহ্য বিপন্ন হবে বলে তাদের আশঙ্কা।"
-marked_text = "[CLS] " + text + " [SEP]"
+text1 = "সে ক্ষেত্রে তারা রাজনৈতিক মামলায় গ্রেপ্তার-হয়রানি বন্ধ করা, নেতারা যাতে প্রকাশ্যে আসতে পারেন।"
+text2 = "প্রচার চালাতে পারেন ইত্যাদি বিষয়ে নির্বাচন কমিশনের কাছে নিশ্চয়তা চাওয়ার বিষয়ে বিএনপির কেন্দ্রীয় নেতাদের মধ্যে আলোচনা হচ্ছে।"
+marked_text = "[CLS] " + text1 + " [SEP] " + text2 + " [SEP] " #adding bert special tokens
 print (marked_text)
 
 re.sub('।', '', marked_text)
 
 tokenized_text = tokenizer.tokenize(marked_text)
 # print (tokenized_text)
-indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+# keeping track of hashed tokens
+indexlist = []
+for ind , item in enumerate(tokenized_text):
+    if '#' in item:
+        indexlist.append(ind)
+print(indexlist)
+# ends here
 
+#this function takes the hashed words, removes the hashes , and appends it to the previous word, enabling us to
+#see the word it got subword-ed to
+def clean_list(words_list):
+    new_list = []
+
+    for idx, word in enumerate(words_list):
+        # no # sign
+        if word.find('#') == -1:
+            new_list.append(word)
+        # there is a # sign
+        else:
+            curr_len = len(new_list)
+
+            if curr_len > 0:
+                prev_word_idx = curr_len - 1
+                new_list[prev_word_idx] = new_list[prev_word_idx] + word.replace('#', '')
+
+    return new_list
+
+
+skip_hash = clean_list(tokenized_text)
+print(skip_hash)
+# ends here
+
+indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+re_indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+print(re_indexed_tokens)
+print(len(re_indexed_tokens))
+print("Tokenizing the original form, includes the hash words")
+for tup in zip(tokenized_text, indexed_tokens):
+    print (tup)
+
+for index in sorted(indexlist, reverse = True):
+    del re_indexed_tokens[index]
+# print(re_indexed_tokens)
+for tup in zip(re_tokenized_text, re_indexed_tokens):
+    print (tup)
 segments_ids = [1] * len(tokenized_text)
 # print (segments_ids)
 
