@@ -49,8 +49,8 @@ def clean_list(words_list):
     return new_list
 
 
-skip_hash = clean_list(tokenized_text)
-print(skip_hash)
+re_tokenized_text = clean_list(tokenized_text)
+print(re_tokenized_text)
 # ends here
 
 indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
@@ -64,13 +64,26 @@ for tup in zip(tokenized_text, indexed_tokens):
 for index in sorted(indexlist, reverse = True):
     del re_indexed_tokens[index]
 # print(re_indexed_tokens)
+print("Tokens after removing hashed words")
 for tup in zip(re_tokenized_text, re_indexed_tokens):
     print (tup)
-segments_ids = [1] * len(tokenized_text)
+# segments_ids = [1] * len(tokenized_text)
 # print (segments_ids)
+# Add sentence ids
+count = 0
+for i in re_tokenized_text:
+    count = count + 1
+    if i == '[SEP]':
+        break
+
+segments_ids1 = [0] * count
+segments_ids2 = [1] * (len(re_tokenized_text) - count)
+segments_ids = segments_ids1 + segments_ids2
+print(segments_ids)
+# ends here
 
 # Convert inputs to PyTorch tensors
-tokens_tensor = torch.tensor([indexed_tokens])
+tokens_tensor = torch.tensor([re_indexed_tokens])
 segments_tensors = torch.tensor([segments_ids])
 
 # Load pre-trained model (weights)
@@ -110,7 +123,7 @@ print ("Number of hidden units:", len(encoded_layers[layer_i][batch_i][token_i])
 token_embeddings = []
 
 # For each token in the sentence...
-for token_i in range(len(tokenized_text)):
+for token_i in range(len(re_tokenized_text)):
 
   # Holds 12 layers of hidden states for each token
   hidden_layers = []
@@ -163,13 +176,12 @@ def press(event):
 labels = []
 tokens = []
 
-for i,x in enumerate(tokenized_text):
-    if '#' not in x and '[UNK]' not in x:
+for i,x in enumerate(re_tokenized_text):
 
         tokens.append(arr[i])
         labels.append(x)
 
-tsne_model = TSNE(perplexity=3, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
+tsne_model = TSNE(perplexity=5, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
 new_values = tsne_model.fit_transform(tokens)
 """Creation of tsne model ends here"""
 # keeping track of tokens according to sentence
