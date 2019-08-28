@@ -102,9 +102,15 @@ print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 
 arr = [t.numpy() for t in token_vecs_sum]
 
+sentence1 = []
+sentence2 = []
 
 def press(event):
     print('you pressed', event.button, event.xdata, event.ydata)
+    if event.xdata in sentence1 and event.ydata in sentence1:
+        print("sentence 1")
+    elif event.xdata in sentence2 and event.ydata in sentence2:
+        print("sentence 2")
 
 
 
@@ -123,8 +129,7 @@ tsne_model = TSNE(perplexity=3, n_components=2, init='pca', n_iter=5000, random_
 new_values = tsne_model.fit_transform(tokens)
 """Creation of tsne model ends here"""
 # keeping track of tokens according to sentence
-sentence1 = []
-sentence2 = []
+
 count = 0
 for i in segments_ids:
     if(i == 0):
