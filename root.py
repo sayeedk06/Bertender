@@ -172,16 +172,16 @@ def method(text1,text2):
 
 def layers(start_layer, end_layer, token_embeddings):
     global token_vecs_sum
-    
+
 
         # Stores the token vectors, with shape [22 x 768]
-        
+
         # For each token in the sentence...
     for token in token_embeddings:
-        
+
         sum_vec = torch.sum(torch.stack(token)[int(start_layer):int(end_layer)], 0)
         # Use `sum_vec` to represent `token`.
-        
+
         token_vecs_sum.append(sum_vec)
     print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 
@@ -199,7 +199,7 @@ class Root(Tk):
     def matplotCanvas(self):
         text1 = input("Enter the first sentence here: ")
         text2 = input("Enter the second sentence here: ")
-        
+
         method(text1,text2)
         layers(start_layer, end_layer, token_embeddings)
         for i,x in enumerate(re_tokenized_text):
