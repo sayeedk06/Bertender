@@ -1,6 +1,6 @@
 from tkinter import *
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backend_bases import key_press_handler
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 import logging
@@ -9,6 +9,7 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
+import seaborn as sns
 
 class Root(Tk):
     """docstring for."""
@@ -24,12 +25,14 @@ class Root(Tk):
         tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
         print("\nThe given sentences are displayed below:\n")
-        text1 = "সে ক্ষেত্রে তারা রাজনৈতিক মামলায় গ্রেপ্তার-হয়রানি বন্ধ করা, নেতারা যাতে প্রকাশ্যে আসতে পারেন।"
-        text2 = "প্রচার চালাতে পারেন ইত্যাদি বিষয়ে নির্বাচন কমিশনের কাছে নিশ্চয়তা চাওয়ার বিষয়ে বিএনপির কেন্দ্রীয় নেতাদের মধ্যে আলোচনা হচ্ছে।"
+        text1 = u"সে ক্ষেত্রে তারা রাজনৈতিক মামলায় গ্রেপ্তার-হয়রানি বন্ধ করা, নেতারা যাতে প্রকাশ্যে আসতে পারেন।"
+
+        text2 = u"প্রচার চালাতে পারেন ইত্যাদি বিষয়ে নির্বাচন কমিশনের কাছে নিশ্চয়তা চাওয়ার বিষয়ে বিএনপির কেন্দ্রীয় নেতাদের মধ্যে আলোচনা হচ্ছে।"
+
         marked_text = "[CLS] " + text1 + " [SEP] " + text2 + " [SEP] " #adding bert special tokens
         print (marked_text)
 
-        re.sub('।', '', marked_text)
+        marked_text = re.sub('।', '', marked_text)
 
         tokenized_text = tokenizer.tokenize(marked_text)
         # print (tokenized_text)
@@ -175,16 +178,23 @@ class Root(Tk):
 
         arr = [t.numpy() for t in token_vecs_sum]
 
+# mouse click event starts here
         sent_dic = dict()
-        def press(event):
+        def on_click(event):
             print('you pressed', event.button, event.xdata, event.ydata)
             xpos, ypos = event.xdata, event.ydata
             for key in sent_dic:
                 for values in sent_dic[key]:
                     if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
                         print(key)
+                        self.text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
+                        canvas.draw()
+                        # key_press_handler(event, canvas, toolbar)
 
-
+        def off_click(event):
+            self.text_show.remove()
+            canvas.draw()
+# mouse click event ends here
         "Creates and TSNE model and plots it"
         labels = []
         tokens = []
@@ -219,6 +229,7 @@ class Root(Tk):
             y.append(value[1])
 
         f = plt.figure(figsize=(16, 16))
+        sns.set(palette='bright')
         for i in range(len(x)):
             p = plt.scatter(x[i],y[i])
             plt.annotate(labels[i],
@@ -229,9 +240,15 @@ class Root(Tk):
                    fontsize=19, fontproperties=prop)
 
         canvas = FigureCanvasTkAgg(f, self)
-        f.canvas.mpl_connect('button_press_event', press)
+        f.canvas.mpl_connect('button_press_event', on_click)
+        f.canvas.mpl_connect('button_release_event', off_click)
         canvas.draw()
-        canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
+        toolbar = NavigationToolbar2Tk(canvas, self)
+        toolbar.update()
+        toolbar.pack()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
+
+        # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
         """plotting ends here"""
 
