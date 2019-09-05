@@ -6,19 +6,33 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
-#serve browser
+# commandline argument
+import argparse
 
 
+parser = argparse.ArgumentParser()
 
+parser.add_argument("text1",help="The first text you want to plot")
+parser.add_argument("text2",help="The second text you want to plot")
+
+args = parser.parse_args()
+
+def read_text(text1, text2):
+    line1 = open('data/%s.txt'% text1, encoding='utf-8').read()
+    line2 = open('data/%s.txt'% text2, encoding='utf-8').read()
+
+    return line1, line2
+
+text1, text2 = read_text(args.text1,args.text2)
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
 
-text1 = "সে ক্ষেত্রে তারা রাজনৈতিক মামলায় গ্রেপ্তার-হয়রানি বন্ধ করা, নেতারা যাতে প্রকাশ্যে আসতে পারেন।"
-text2 = "প্রচার চালাতে পারেন ইত্যাদি বিষয়ে নির্বাচন কমিশনের কাছে নিশ্চয়তা চাওয়ার বিষয়ে বিএনপির কেন্দ্রীয় নেতাদের মধ্যে আলোচনা হচ্ছে।"
+# text1 = "সে ক্ষেত্রে তারা রাজনৈতিক মামলায় গ্রেপ্তার-হয়রানি বন্ধ করা, নেতারা যাতে প্রকাশ্যে আসতে পারেন।"
+# text2 = "প্রচার চালাতে পারেন ইত্যাদি বিষয়ে নির্বাচন কমিশনের কাছে নিশ্চয়তা চাওয়ার বিষয়ে বিএনপির কেন্দ্রীয় নেতাদের মধ্যে আলোচনা হচ্ছে।"
 marked_text = "[CLS] " + text1 + " [SEP] " + text2 + " [SEP] " #adding bert special tokens
 print (marked_text)
 
-re.sub('।', '', marked_text)
+marked_text = re.sub('।', '', marked_text)
 
 tokenized_text = tokenizer.tokenize(marked_text)
 # print (tokenized_text)
@@ -162,13 +176,20 @@ arr = [t.numpy() for t in token_vecs_sum]
 
 sent_dic = dict()
 
-def press(event):
+def on_click(event):
+    global text_show
     print('you pressed', event.button, event.xdata, event.ydata)
     xpos, ypos = event.xdata, event.ydata
     for key in sent_dic:
         for values in sent_dic[key]:
             if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
                 print(key)
+                text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
+                plt.draw()
+
+def off_click(event):
+    text_show.remove()
+    plt.draw()
 
     # if((any(event.xdata in token[0] for token in sentence1)) and (any(event.ydata in token[1] for token in sentence1))):
     #     print('Sentence1')
@@ -221,7 +242,8 @@ for i in range(len(x)):
             textcoords='offset points',
             ha='right',
            fontsize=19, fontproperties=prop)
-fig.canvas.mpl_connect('button_press_event', press)
+fig.canvas.mpl_connect('button_press_event', on_click)
+fig.canvas.mpl_connect('button_release_event', off_click)
 # tooltip = mpld3.plugins.PointLabelTooltip(p, labels=labels)
 # mpld3.plugins.connect(fig, tooltip)
 # mpld3.show()

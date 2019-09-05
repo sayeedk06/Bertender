@@ -285,7 +285,7 @@ class Root(Tk):
 
         """plotting ends here"""
 
+if __name__== '__main__':
 
-
-root = Root()
-root.mainloop()
+    root = Root()
+    root.mainloop()
