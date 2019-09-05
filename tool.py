@@ -6,6 +6,7 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
+#serve browser
 
 
 
@@ -159,16 +160,22 @@ print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 
 arr = [t.numpy() for t in token_vecs_sum]
 
-sentence1 = []
-sentence2 = []
+sent_dic = dict()
 
 def press(event):
     print('you pressed', event.button, event.xdata, event.ydata)
-    if event.xdata in sentence1 and event.ydata in sentence1:
-        print("sentence 1")
-    elif event.xdata in sentence2 and event.ydata in sentence2:
-        print("sentence 2")
+    xpos, ypos = event.xdata, event.ydata
+    for key in sent_dic:
+        for values in sent_dic[key]:
+            if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
+                print(key)
 
+    # if((any(event.xdata in token[0] for token in sentence1)) and (any(event.ydata in token[1] for token in sentence1))):
+    #     print('Sentence1')
+    # elif((any(event.xdata in token[0] for token in sentence2)) and (any(event.ydata in token[1] for token in sentence2))):
+    #     print("sentence2")
+    # else:
+    #     print("no point here")
 
 
 
@@ -187,11 +194,14 @@ new_values = tsne_model.fit_transform(tokens)
 # keeping track of tokens according to sentence
 
 count = 0
+newlist = new_values.tolist()
 for i in segments_ids:
     if(i == 0):
-        sentence1.append(new_values[i])
+        sent_dic.setdefault(text1, []).append(newlist[count])
+        count = count + 1
     else:
-        sentence2.append(new_values[i])
+        sent_dic.setdefault(text2, []).append(newlist[count])
+        count = count + 1
 # keeping tracks ends here
 
 """plotting starts here"""
@@ -204,7 +214,7 @@ for value in new_values:
 
 fig = plt.figure(figsize=(16, 16))
 for i in range(len(x)):
-    plt.scatter(x[i],y[i])
+    p = plt.scatter(x[i],y[i])
     plt.annotate(labels[i],
             xy=(x[i], y[i]),
             xytext=(0, 0),
@@ -212,6 +222,8 @@ for i in range(len(x)):
             ha='right',
            fontsize=19, fontproperties=prop)
 fig.canvas.mpl_connect('button_press_event', press)
-
+# tooltip = mpld3.plugins.PointLabelTooltip(p, labels=labels)
+# mpld3.plugins.connect(fig, tooltip)
+# mpld3.show()
 plt.show()
 """plotting ends here"""
