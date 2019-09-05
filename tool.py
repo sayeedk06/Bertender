@@ -6,6 +6,7 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
+#serve browser
 
 
 
@@ -213,7 +214,7 @@ for value in new_values:
 
 fig = plt.figure(figsize=(16, 16))
 for i in range(len(x)):
-    plt.scatter(x[i],y[i])
+    p = plt.scatter(x[i],y[i])
     plt.annotate(labels[i],
             xy=(x[i], y[i]),
             xytext=(0, 0),
@@ -221,6 +222,8 @@ for i in range(len(x)):
             ha='right',
            fontsize=19, fontproperties=prop)
 fig.canvas.mpl_connect('button_press_event', press)
-
+# tooltip = mpld3.plugins.PointLabelTooltip(p, labels=labels)
+# mpld3.plugins.connect(fig, tooltip)
+# mpld3.show()
 plt.show()
 """plotting ends here"""
