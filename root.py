@@ -1,6 +1,6 @@
 from tkinter import *
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backend_bases import key_press_handler
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 import logging
@@ -183,6 +183,8 @@ class Root(Tk):
                 for values in sent_dic[key]:
                     if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
                         print(key)
+                        # key_press_handler(event, canvas, toolbar)
+
 
 
         "Creates and TSNE model and plots it"
@@ -231,7 +233,12 @@ class Root(Tk):
         canvas = FigureCanvasTkAgg(f, self)
         f.canvas.mpl_connect('button_press_event', press)
         canvas.draw()
-        canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
+        toolbar = NavigationToolbar2Tk(canvas, self)
+        toolbar.update()
+        toolbar.pack()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
+
+        # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
         """plotting ends here"""
 
