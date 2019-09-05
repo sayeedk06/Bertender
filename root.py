@@ -175,18 +175,23 @@ class Root(Tk):
 
         arr = [t.numpy() for t in token_vecs_sum]
 
+# mouse click event starts here
         sent_dic = dict()
-        def press(event):
+        def on_click(event):
             print('you pressed', event.button, event.xdata, event.ydata)
             xpos, ypos = event.xdata, event.ydata
             for key in sent_dic:
                 for values in sent_dic[key]:
                     if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
                         print(key)
+                        self.text_show = plt.text(event.xdata, event.ydata, key, fontsize=8, fontproperties=prop)
+                        canvas.draw()
                         # key_press_handler(event, canvas, toolbar)
 
-
-
+        def off_click(event):
+            self.text_show.remove()
+            canvas.draw()
+# mouse click event ends here
         "Creates and TSNE model and plots it"
         labels = []
         tokens = []
@@ -231,7 +236,8 @@ class Root(Tk):
                    fontsize=19, fontproperties=prop)
 
         canvas = FigureCanvasTkAgg(f, self)
-        f.canvas.mpl_connect('button_press_event', press)
+        f.canvas.mpl_connect('button_press_event', on_click)
+        f.canvas.mpl_connect('button_release_event', off_click)
         canvas.draw()
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.update()
