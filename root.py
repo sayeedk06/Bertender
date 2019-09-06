@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
 import seaborn as sns
+#commandline
+import argparse
+
+
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 # Load pre-trained model (weights)
@@ -17,15 +21,26 @@ model = BertModel.from_pretrained('bert-base-multilingual-cased')
 
 
 
-start_layer = 0
-end_layer = 0
+# start_layer = 0
+# end_layer = 0
 token_embeddings = []
 re_tokenized_text = []
 segments_ids = []
 
 token_vecs_sum = []
-def method(text1,text2):
-    global start_layer, end_layer, token_embeddings, re_tokenized_text, segments_ids
+
+def read_text(text1, text2):
+    line1 = open('data/%s.txt'% text1, encoding='utf-8').read()
+    line2 = open('data/%s.txt'% text2, encoding='utf-8').read()
+
+    return line1, line2
+
+
+def method(line1,line2):
+
+
+    global text1, text2, token_embeddings, re_tokenized_text, segments_ids
+    text1, text2 = read_text(line1,line2)
     marked_text = "[CLS] " + text1 + " [SEP] " + text2 + " [SEP] " #adding bert special tokens
     print(marked_text)
 
@@ -163,14 +178,14 @@ def method(text1,text2):
 
 
 
-    print("Choose the layers: ")
-    start_layer = input("What should be the starting layer: ")
-    end_layer = input("What should be the end layer: ")
+    # print("Choose the layers: ")
+    # start_layer = input("What should be the starting layer: ")
+    # end_layer = input("What should be the end layer: ")
 
-    return start_layer, end_layer, token_embeddings, re_tokenized_text
+    # return start_layer, end_layer, token_embeddings, re_tokenized_text
 
 
-def layers(start_layer, end_layer, token_embeddings):
+def layers(token_embeddings,start_layer, end_layer):
     global token_vecs_sum
 
 
@@ -196,12 +211,12 @@ class Root(Tk):
         self. matplotCanvas()
 
 
-    def matplotCanvas(self):
-        text1 = input("Enter the first sentence here: ")
-        text2 = input("Enter the second sentence here: ")
 
-        method(text1,text2)
-        layers(start_layer, end_layer, token_embeddings)
+    def matplotCanvas(self):
+
+
+        method(args.text1,args.text2)
+        layers(token_embeddings,args.start_layer, args.end_layer)
         for i,x in enumerate(re_tokenized_text):
             print (i,x)
 
@@ -225,6 +240,7 @@ class Root(Tk):
             self.text_show.remove()
             canvas.draw()
 # mouse click event ends here
+
         "Creates and TSNE model and plots it"
         labels = []
         tokens = []
@@ -235,9 +251,9 @@ class Root(Tk):
             tokens.append(arr[i])
             labels.append(x)
 
-        per = input("Choose a perplexity : ")
 
-        tsne_model = TSNE(perplexity=int(per), n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
+
+        tsne_model = TSNE(perplexity=args.perplexity, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
         new_values = tsne_model.fit_transform(tokens)
         # keeping track of tokens according to sentence
 
@@ -285,7 +301,17 @@ class Root(Tk):
 
         """plotting ends here"""
 
+if __name__== '__main__':
 
+    parser = argparse.ArgumentParser()
 
-root = Root()
-root.mainloop()
+    parser.add_argument("text1",type=str,help="first text to plot")
+    parser.add_argument("text2",type=str,help="Second text to plot")
+    parser.add_argument("--start_layer",type=int,default=8,help="starting layer number to plot")
+    parser.add_argument("--end_layer",type=int,default=12,help="ending layer number to plot")
+    parser.add_argument("--perplexity",type=int,default=3,help="number of nearest neighbour")
+
+    args = parser.parse_args()
+
+    root = Root()
+    root.mainloop()
