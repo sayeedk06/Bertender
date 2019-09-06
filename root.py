@@ -185,7 +185,7 @@ def method(line1,line2):
     # return start_layer, end_layer, token_embeddings, re_tokenized_text
 
 
-def layers(start_layer, end_layer, token_embeddings):
+def layers(token_embeddings,start_layer, end_layer):
     global token_vecs_sum
 
 
@@ -216,7 +216,7 @@ class Root(Tk):
 
 
         method(args.text1,args.text2)
-        layers(args.start_layer, args.end_layer, token_embeddings)
+        layers(token_embeddings,args.start_layer, args.end_layer)
         for i,x in enumerate(re_tokenized_text):
             print (i,x)
 
@@ -240,6 +240,7 @@ class Root(Tk):
             self.text_show.remove()
             canvas.draw()
 # mouse click event ends here
+
         "Creates and TSNE model and plots it"
         labels = []
         tokens = []
@@ -250,9 +251,9 @@ class Root(Tk):
             tokens.append(arr[i])
             labels.append(x)
 
-        per = input("Choose a perplexity : ")
 
-        tsne_model = TSNE(perplexity=int(per), n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
+
+        tsne_model = TSNE(perplexity=args.perplexity, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
         new_values = tsne_model.fit_transform(tokens)
         # keeping track of tokens according to sentence
 
@@ -304,10 +305,11 @@ if __name__== '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("text1",help="first text")
-    parser.add_argument("text2",help="Second text")
-    parser.add_argument("--start_layer",help="choose the starting layer to plot")
-    parser.add_argument("--end_layer",help="choose the ending layer to plot")
+    parser.add_argument("text1",type=str,help="first text to plot")
+    parser.add_argument("text2",type=str,help="Second text to plot")
+    parser.add_argument("--start_layer",type=int,default=8,help="starting layer number to plot")
+    parser.add_argument("--end_layer",type=int,default=12,help="ending layer number to plot")
+    parser.add_argument("--perplexity",type=int,default=3,help="number of nearest neighbour")
 
     args = parser.parse_args()
 
