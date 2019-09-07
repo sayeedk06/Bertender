@@ -12,7 +12,11 @@ from sklearn.manifold import TSNE
 import seaborn as sns
 #commandline
 import argparse
+#autodownload required files
+import subprocess
 
+subprocess.run(["pip","install", "pytorch-transformers==1.0.0"])
+subprocess.run(["pip","install", "pytorch-pretrained-bert==0.6.2"])
 
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
