@@ -29,7 +29,7 @@ pip install pytorch-pretrained-bert
 ```
 For more information visit: https://github.com/huggingface/pytorch-transformers
 
-Example:
+<p>Example:</p>
 <p align="center">
   <img width="700" height="420" src="images/similar.png"><br>
   Figure 1.0
@@ -40,3 +40,4 @@ To run the script
 ```
 python root.py first second
 ```
+<p>you can also define the BERT layers and Tsne perplexity using --start_layer, --end_layer and --perplexity respectively</p>
