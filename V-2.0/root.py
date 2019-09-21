@@ -31,7 +31,7 @@ def adding_special_tokens(text1):
     lines = open('data/%s.txt'% text1, encoding='utf-8').read().split('।')
     tar = []
     for line in lines:
-        line re.sub('[()]', '', line) #brackets removed
+        line = re.sub('[()]', '', line) #brackets removed
         marked_text = " [CLS] " + line +" [SEP] "
         tar.append(marked_text)
 #         print(tar)
