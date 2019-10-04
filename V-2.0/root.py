@@ -12,12 +12,7 @@ from sklearn.manifold import TSNE
 import seaborn as sns
 #commandline
 import argparse
-#autodownload required files
-import subprocess
 
-
-subprocess.run(["pip","install", "pytorch-transformers==1.0.0"])
-subprocess.run(["pip","install", "pytorch-pretrained-bert==0.6.2"])
 
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
@@ -26,18 +21,24 @@ model = BertModel.from_pretrained('bert-base-multilingual-cased')
 
 
 
+# start_layer = 0
+# end_layer = 0
 labels = []
-
+# token_embeddings = []
+# re_tokenized_text = []
+# segments_ids = []
 sent_dic = dict()
-
+# token_vecs_sum = []
+# tar = []
+# indexlist = []
 all_values = []
 def adding_special_tokens(text1):
 
     lines = open('data/%s.txt'% text1, encoding='utf-8').read().split('।')
     tar = []
     for line in lines:
-        line = re.sub('[()]', '', line) #brackets removed
-        marked_text = " [CLS] " + line +" [SEP] "
+
+        marked_text = " [CLS] " + line +" [SEP] " 
         tar.append(marked_text)
 #         print(tar)
     return tar
@@ -48,26 +49,29 @@ def index_list(tokenized_text, indexlist):
         if '#' in item:
 
             indexlist.append(ind)
-
+    # print(indexlist)
     return indexlist
     #this function takes the hashed words, removes the hashes , and appends it to the previous word, enabling us to
     #see the word it got subword-ed to
-def clean_list(words_list):
+def clean_list(words_list, tokens_list):
     new_list = []
-
-    for idx, word in enumerate(words_list):
-        # no # sign
+    new_token_list = []
+    for index, (word, token) in enumerate(zip(words_list, tokens_list)):
+        print(word)
         if word.find('#') == -1:
             new_list.append(word)
-        # there is a # sign
+            new_token_list.append(token)
         else:
             curr_len = len(new_list)
-
+            
             if curr_len > 0:
                 prev_word_idx = curr_len - 1
+                print(new_list[prev_word_idx])
                 new_list[prev_word_idx] = new_list[prev_word_idx] + word.replace('#', '')
+                print(new_list[prev_word_idx])
+                new_token_list[prev_word_idx] = int((new_token_list[prev_word_idx]+token)/2)
 
-    return new_list
+    return new_list, new_token_list
 
 def token_embeddings_function(re_tokenized_text, encoded_layers, token_embeddings, layer_i, batch_i, token_i):
 
@@ -90,7 +94,10 @@ def token_embeddings_function(re_tokenized_text, encoded_layers, token_embedding
 def method(line1):
 
 
-
+    # global text1,token_embeddings, re_tokenized_text, segments_ids
+    # text1 = read_text(line1)
+    # marked_text = "[CLS] " + text1 + " [SEP] " + text2 + " [SEP] " #adding bert special tokens
+    # print(text1)
 
 
     tokenized_text = tokenizer.tokenize(line1)
@@ -100,48 +107,61 @@ def method(line1):
     print("this is indexed_tokens")
     print(indexed_tokens)
 
-    indexlist = []
+    # indexlist = []
 
-    indexlist = index_list(tokenized_text, indexlist)
+    # indexlist = index_list(tokenized_text, indexlist)
 
 
-    #re_tokenized_text is only the start words, words that do not have hash in them.
-    re_tokenized_text = [l for l in tokenized_text if '#' not in l]
+    # #re_tokenized_text is only the start words, words that do not have hash in them.
+    # re_tokenized_text = [l for l in tokenized_text if '#' not in l]
     # print("first RETOKENIZED TEXT")
     # print(re_tokenized_text)
 
 
 
-    print("When the words get tokenized: ")
-    print(tokenized_text)
-    re_tokenized_text = clean_list(tokenized_text)
+    # print("When the words get tokenized: ")
+    # print(tokenized_text)
+    re_tokenized_text, re_tokenized_tokens = clean_list(tokenized_text, indexed_tokens)
     print("Finding the original words back for representation: ")
     print(re_tokenized_text)
 
 
-    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-    re_indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-    print(re_indexed_tokens)
-    print(len(re_indexed_tokens))
-    print("Tokenizing the original form, includes the hash words")
-    for tup in zip(tokenized_text, indexed_tokens):
-        print (tup)
+    # indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+    # re_indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+    # print(re_indexed_tokens)
+    # print(len(re_indexed_tokens))
+    # print("Tokenizing the original form, includes the hash words")
+    # for tup in zip(tokenized_text, indexed_tokens):
+    #     print (tup)
 
 
-    for index in sorted(indexlist, reverse = True):
-        del re_indexed_tokens[index]
-    print(re_indexed_tokens)
+    # for index in sorted(indexlist, reverse = True):
+    #     del re_indexed_tokens[index]
+    # print(re_indexed_tokens)
 
     #tokenizing just the start words of any subwords, and then zipping it with the complete word
-    for tup in zip(re_tokenized_text, re_indexed_tokens):
+    for tup in zip(re_tokenized_text, re_tokenized_tokens):
         print (tup)
 
-
+    # def addSentenceId(token_text):
+    #     count = 0
+    #     for i in token_text:
+    #         count = count + 1
+    #         if i == '[SEP]':
+    #             break
+    #
+    #     segments_ids1 = [0] * count
+    #     segments_ids2 = [1] * (len(token_text) - count)
+    #     segments_ids = segments_ids1 + segments_ids2
+    #     print(segments_ids)
+    #     # segments_ids = [1] * len(tokenized_text)
+    #     # print (segments_ids)
+    #     return segments_ids
 
     segments_ids = [1] * len(re_tokenized_text)
 
     # Convert inputs to PyTorch tensors
-    tokens_tensor = torch.tensor([re_indexed_tokens])
+    tokens_tensor = torch.tensor([re_tokenized_tokens])
     segments_tensors = torch.tensor([segments_ids])
 
 
@@ -174,7 +194,18 @@ def method(line1):
     # For each token in the sentence...
     # for token_i in range(len(re_tokenized_text)):
 
+    # Holds 12 layers of hidden states for each token
+        # hidden_layers = []
 
+        # For each of the 12 layers...
+        # for layer_i in range(len(encoded_layers)):
+
+            # Lookup the vector for `token_i` in `layer_i`
+        #     vec = encoded_layers[layer_i][batch_i][token_i]
+        #
+        #     hidden_layers.append(vec)
+        #
+        # token_embeddings.append(hidden_layers)
 
     # Sanity check the dimensions:
     print ("Number of tokens in sequence:", len(token_embeddings))
@@ -182,7 +213,9 @@ def method(line1):
 
 
 
-
+    # print("Choose the layers: ")
+    # start_layer = input("What should be the starting layer: ")
+    # end_layer = input("What should be the end layer: ")
 
     return token_embeddings, re_tokenized_text, segments_ids
 
@@ -206,9 +239,9 @@ def layers(token_embeddings,start_layer, end_layer):
 
 def tsne(re_tokenized_text,arr,text, segments_ids):
     "Creates a TSNE model"
-
+    # labels = []
     tokens = []
-
+#     global labels, all_values, sent_dic
 
     for i,x in enumerate(re_tokenized_text):
 
@@ -254,52 +287,29 @@ class Root(Tk):
             # method(text)
             print(text)
             token_embeddings, re_tokenized_text, segments_ids = method(text)
+# print(re_tokenized_text)
 
+            # layers(token_embeddings,args.start_layer, args.end_layer)
             token_vecs_sum = layers(token_embeddings, args.start_layer, args.end_layer)
-
+#     for i,x in enumerate(re_tokenized_text):
+#         print (i,x)
 
             arr = [t.numpy() for t in token_vecs_sum]
             tsne(re_tokenized_text,arr,text, segments_ids)
-
-
+      
+        
             print("RETOKENIZED")
             print(re_tokenized_text)
             print(labels)
 
 # mouse click event starts here
-
+        # global sent_dic = dict()
         def on_click(event):
             print('you pressed', event.button, event.xdata, event.ydata)
-            self.check = 5
-            axes = plt.gca()
-            left, right = axes.get_xlim()
-            if(left< 0 and right<=0):
-                if(abs(left)-abs(right)) < 500 and (abs(left)-abs(right)) > 200:
-                    self.check = 4
-                elif(abs(left)-abs(right)) < 200 and (abs(left)-abs(right)) > 100:
-                    self.check = 2
-                elif(abs(left)-abs(right)) < 100:
-                    self.check = 1
-            elif(left >= 0 and right >0):
-                if(abs(left)-abs(right)) < 500 and (abs(left)-abs(right)) > 200:
-                    self.check = 4
-                elif(abs(left)-abs(right)) < 200 and (abs(left)-abs(right)) > 100:
-                    self.check = 2
-                elif(abs(left)-abs(right)) < 100:
-                    self.check = 1
-            elif(left < 0 and right >=0):
-                # if(300 < (abs(left)- right) < 400):
-                #     self.check = 4
-                if(200 < (abs(left)-right) < 300):
-                    self.check = 2.5
-                elif(100 < (abs(left)-right) < 200):
-                    self.check = 2
-                elif((abs(left)-right) < 100):
-                    self.check = 0.5
             xpos, ypos = event.xdata, event.ydata
             for key in sent_dic:
                 for values in sent_dic[key]:
-                    if abs(xpos - values[0]) < self.check and abs(ypos - values[1]) < self.check:
+                    if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
                         print(key)
                         self.text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
                         canvas.draw()
@@ -313,22 +323,22 @@ class Root(Tk):
 
 
         """plotting starts here"""
-
+        
         prop = fm.FontProperties(fname='kalpurush.ttf')
         x = []
         y = []
 
-
+        count = 0
         print("k")
         for t in all_values:
             j = t
             for k in j:
                 x.append(k[0])
                 y.append(k[1])
-
-
-
-
+        #         print(k[0])
+            
+                count = count + 1
+                
         f = plt.figure(figsize=(16, 16))
         sns.set(palette='bright')
         for i in range(len(labels)):
@@ -340,33 +350,8 @@ class Root(Tk):
                             ha='right',
                            fontsize=19, fontproperties=prop)
 
+        
 
-        # self.check = 5
-        # axes = plt.gca()
-        # left, right = axes.get_xlim()
-        # if(left< 0 and right<=0):
-        #     if(abs(left)-abs(right)) < 500 and (abs(left)-abs(right)) > 200:
-        #         self.check = 4
-        #     elif(abs(left)-abs(right)) < 200 and (abs(left)-abs(right)) > 100:
-        #         self.check = 2
-        #     elif(abs(left)-abs(right)) < 100:
-        #         self.check = 1
-        # elif(left >= 0 and right >0):
-        #     if(abs(left)-abs(right)) < 500 and (abs(left)-abs(right)) > 200:
-        #         self.check = 4
-        #     elif(abs(left)-abs(right)) < 200 and (abs(left)-abs(right)) > 100:
-        #         self.check = 2
-        #     elif(abs(left)-abs(right)) < 100:
-        #         self.check = 1
-        # elif(left < 0 and right > 0):
-        #     if(left + right) < 500 and (left+right) > 200:
-        #         self.check = 4
-        #     elif(left+right) < 200 and (left+right) > 100:
-        #         self.check = 2
-        #     elif(left+right) < 100:
-        #         self.check = 1
-        # print(left)
-        # print(right)
         canvas = FigureCanvasTkAgg(f, self)
         f.canvas.mpl_connect('button_press_event', on_click)
         f.canvas.mpl_connect('button_release_event', off_click)
@@ -376,7 +361,7 @@ class Root(Tk):
         toolbar.pack()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
 
-
+        # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
         """plotting ends here"""
 
