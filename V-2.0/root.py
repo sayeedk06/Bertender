@@ -5,6 +5,7 @@ import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 import logging
 import re
+import numpy as np
 #visualization
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
@@ -12,7 +13,8 @@ from sklearn.manifold import TSNE
 import seaborn as sns
 #commandline
 import argparse
-
+#clustering
+from sklearn.cluster import DBSCAN
 
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
@@ -38,7 +40,7 @@ def adding_special_tokens(text1):
     tar = []
     for line in lines:
 
-        marked_text = " [CLS] " + line +" [SEP] " 
+        marked_text = " [CLS] " + line +" [SEP] "
         tar.append(marked_text)
 #         print(tar)
     return tar
@@ -63,7 +65,7 @@ def clean_list(words_list, tokens_list):
             new_token_list.append(token)
         else:
             curr_len = len(new_list)
-            
+
             if curr_len > 0:
                 prev_word_idx = curr_len - 1
                 print(new_list[prev_word_idx])
@@ -296,8 +298,8 @@ class Root(Tk):
 
             arr = [t.numpy() for t in token_vecs_sum]
             tsne(re_tokenized_text,arr,text, segments_ids)
-      
-        
+
+
             print("RETOKENIZED")
             print(re_tokenized_text)
             print(labels)
@@ -323,7 +325,7 @@ class Root(Tk):
 
 
         """plotting starts here"""
-        
+
         prop = fm.FontProperties(fname='kalpurush.ttf')
         x = []
         y = []
@@ -336,13 +338,29 @@ class Root(Tk):
                 x.append(k[0])
                 y.append(k[1])
         #         print(k[0])
-            
+
                 count = count + 1
-                
-        f = plt.figure(figsize=(16, 16))
+        """New code for DBSCAN here. Beaware"""
+        train = DBSCAN(eps=10, min_samples=2)
+        flat_list = [item for sublist in all_values for item in sublist]
+        train.fit(flat_list)
+        np_flat_list = np.array(flat_list)
+        y_pred = train.fit_predict(np_flat_list)
+
+        # f = plt.figure(figsize=(16, 16))
+        f, axes = plt.subplots(nrows = 2, ncols=1)
+        axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+        plt.title("DBSCAN")
+
+        n_clusters_ = len(set(train.labels_)) - (1 if -1 in labels else 0)
+        print("Estimated number of clusters: %d" % n_clusters_)
+
+
+        # f = plt.figure(figsize=(16, 16))
         sns.set(palette='bright')
         for i in range(len(labels)):
-            p = plt.scatter(x[i],y[i])
+            # p = plt.scatter(x[i],y[i])
+            p = axes[1].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
             plt.annotate(labels[i],
                             xy=(x[i], y[i]),
                             xytext=(0, 0),
@@ -350,7 +368,7 @@ class Root(Tk):
                             ha='right',
                            fontsize=19, fontproperties=prop)
 
-        
+
 
         canvas = FigureCanvasTkAgg(f, self)
         f.canvas.mpl_connect('button_press_event', on_click)
