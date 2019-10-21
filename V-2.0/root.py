@@ -308,6 +308,32 @@ class Root(Tk):
         # global sent_dic = dict()
         def on_click(event):
             print('you pressed', event.button, event.xdata, event.ydata)
+            self.check = 5
+            axes = plt.gca()
+            left, right = axes.get_xlim()
+            if(left< 0 and right<=0):
+                if(abs(left)-abs(right)) < 500 and (abs(left)-abs(right)) > 200:
+                    self.check = 4
+                elif(abs(left)-abs(right)) < 200 and (abs(left)-abs(right)) > 100:
+                    self.check = 2
+                elif(abs(left)-abs(right)) < 100:
+                    self.check = 1
+            elif(left >= 0 and right >0):
+                if(abs(left)-abs(right)) < 500 and (abs(left)-abs(right)) > 200:
+                    self.check = 4
+                elif(abs(left)-abs(right)) < 200 and (abs(left)-abs(right)) > 100:
+                    self.check = 2
+                elif(abs(left)-abs(right)) < 100:
+                    self.check = 1
+            elif(left < 0 and right >=0):
+                # if(300 < (abs(left)- right) < 400):
+                #     self.check = 4
+                if(200 < (abs(left)-right) < 300):
+                    self.check = 3
+                elif(100 < (abs(left)-right) < 200):
+                    self.check = 2
+                elif((abs(left)-right) < 100):
+                    self.check = 0.5
             xpos, ypos = event.xdata, event.ydata
             for key in sent_dic:
                 for values in sent_dic[key]:
