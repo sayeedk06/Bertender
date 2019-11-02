@@ -442,9 +442,10 @@ class Root(Tk):
         # print("Estimated number of clusters: %d" % n_clusters_)
         """DBSCAN commented"""
         """kMeans clustering begins here"""
-        y_pred = KMeans(n_clusters=10, random_state=0).fit_predict(np_flat_list)
+        y_pred = KMeans(n_clusters=8, random_state=0).fit_predict(np_flat_list)
         axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
-
+        n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
+        print("Estimated number of clusters: %d" % n_clusters_)
 
 
         """kMeans clustering ends here"""
