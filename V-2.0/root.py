@@ -348,7 +348,7 @@ class Root(Tk):
             print("RETOKENIZED")
             print(re_tokenized_text)
             print(labels)
-
+        
         print("All text")
         print(all_text)
 
