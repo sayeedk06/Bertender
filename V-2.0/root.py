@@ -34,10 +34,9 @@ sent_dic = dict()
 # tar = []
 # indexlist = []
 all_values = []
-all_text = []
 aff = []
 def removing_cls_sep(text, tokens):
-    a = np.array(all_values)
+    a = np.array(tokens)
     b = a.flatten()
     for i in b:
         i = i[1:-1]
@@ -413,9 +412,7 @@ class Root(Tk):
 
         count = 0
         print("k")
-
         removing_cls_sep(labels, all_values)
-
         for t in aff:
             j = t
             for k in j:
