@@ -348,9 +348,9 @@ class Root(Tk):
             print("RETOKENIZED")
             print(re_tokenized_text)
             print(labels)
-        
-        print("All text")
-        print(all_text)
+
+        # print("All text")
+        # print(all_text)
 
         print("All Values: ")
         print(all_values)
@@ -423,7 +423,7 @@ class Root(Tk):
                 count = count + 1
         """DBSCAN commented"""
         # train = DBSCAN(eps=15, min_samples=2)
-        flat_list = [item for sublist in all_values for item in sublist]
+        flat_list = [item for sublist in aff for item in sublist]
         # train.fit(flat_list)
         np_flat_list = np.array(flat_list)
         # y_pred = train.fit_predict(np_flat_list)
