@@ -34,6 +34,28 @@ sent_dic = dict()
 # tar = []
 # indexlist = []
 all_values = []
+aff = []
+def removing_cls_sep(text, tokens):
+    a = np.array(tokens)
+    b = a.flatten()
+    for i in b:
+        i = i[1:-1]
+        print(i)
+        aff.append(i)
+        print("next")
+        
+    count = 0
+    index = []
+    for t in text:
+        if t == "[CLS]":
+            index.append(count)
+        if t == "[SEP]":
+            index.append(count)
+        count += 1
+        
+    for i in sorted(index, reverse = True):
+        del text[i]
+
 def adding_special_tokens(text1):
 
     lines = open('data/%s.txt'% text1, encoding='utf-8').read().split('।')
@@ -358,7 +380,8 @@ class Root(Tk):
 
         count = 0
         print("k")
-        for t in all_values:
+        removing_cls_sep(labels, all_values)
+        for t in aff:
             j = t
             for k in j:
                 x.append(k[0])
@@ -368,7 +391,7 @@ class Root(Tk):
                 count = count + 1
         """New code for DBSCAN here. Beaware"""
         train = DBSCAN(eps=10, min_samples=2)
-        flat_list = [item for sublist in all_values for item in sublist]
+        flat_list = [item for sublist in aff for item in sublist]
         train.fit(flat_list)
         np_flat_list = np.array(flat_list)
         y_pred = train.fit_predict(np_flat_list)
