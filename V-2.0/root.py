@@ -44,16 +44,17 @@ def removing_cls_sep(text, tokens):
         print(i)
         aff.append(i)
         print("next")
-        
+
     count = 0
     index = []
     for t in text:
         if t == "[CLS]":
+            
             index.append(count)
         if t == "[SEP]":
             index.append(count)
         count += 1
-        
+
     for i in sorted(index, reverse = True):
         del text[i]
 
@@ -344,7 +345,7 @@ class Root(Tk):
             # for i in re_tokenized_text:
             #     all_text.append(i)
 
-            
+
 
             print("RETOKENIZED")
             print(re_tokenized_text)
@@ -356,9 +357,9 @@ class Root(Tk):
         print("All Values: ")
         print(all_values)
 
-        
 
-        
+
+
 # mouse click event starts here
         # global sent_dic = dict()
         def on_click(event):
