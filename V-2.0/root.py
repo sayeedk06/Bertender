@@ -15,7 +15,7 @@ import seaborn as sns
 import argparse
 #clustering
 from sklearn.cluster import DBSCAN
-
+from sklearn.cluster import KMeans
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 # Load pre-trained model (weights)
@@ -34,6 +34,29 @@ sent_dic = dict()
 # tar = []
 # indexlist = []
 all_values = []
+all_text = []
+aff = []
+def removing_cls_sep(text, tokens):
+    a = np.array(all_values)
+    b = a.flatten()
+    for i in b:
+        i = i[1:-1]
+        print(i)
+        aff.append(i)
+        print("next")
+
+    count = 0
+    index = []
+    for t in text:
+        if t == "[CLS]":
+            index.append(count)
+        if t == "[SEP]":
+            index.append(count)
+        count += 1
+
+    for i in sorted(index, reverse = True):
+        del text[i]
+
 def adding_special_tokens(text1):
 
     lines = open('data/%s.txt'% text1, encoding='utf-8').read().split('।')
@@ -258,7 +281,21 @@ def tsne(re_tokenized_text,arr,text, segments_ids):
 
     tsne_model = TSNE(perplexity = args.perplexity, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
     new_values = tsne_model.fit_transform(tokens)
-    all_values.append(new_values.tolist())
+    temp_values = (new_values.tolist())
+    print("TEMP")
+    print(temp_values)
+
+    print("RETOKENIZED")
+    print(re_tokenized_text)
+
+    # temp_values = another_clean(re_tokenized_text, temp_values)
+
+    all_values.append(temp_values)
+
+    print("New values")
+    print(all_values)
+
+
 
 
     # keeping track of tokens according to sentence
@@ -297,12 +334,30 @@ class Root(Tk):
 #         print (i,x)
 
             arr = [t.numpy() for t in token_vecs_sum]
+
+            # re_tokenized_text = another_clean(re_tokenized_text)
             tsne(re_tokenized_text,arr,text, segments_ids)
+
+            print("RETOKENIZED")
+            print(re_tokenized_text)
+
+            # for i in re_tokenized_text:
+            #     all_text.append(i)
+
 
 
             print("RETOKENIZED")
             print(re_tokenized_text)
             print(labels)
+
+        print("All text")
+        print(all_text)
+
+        print("All Values: ")
+        print(all_values)
+
+
+
 
 # mouse click event starts here
         # global sent_dic = dict()
@@ -358,7 +413,10 @@ class Root(Tk):
 
         count = 0
         print("k")
-        for t in all_values:
+
+        removing_cls_sep(labels, all_values)
+
+        for t in aff:
             j = t
             for k in j:
                 x.append(k[0])
@@ -366,25 +424,34 @@ class Root(Tk):
         #         print(k[0])
 
                 count = count + 1
-        """New code for DBSCAN here. Beaware"""
-        train = DBSCAN(eps=10, min_samples=2)
+        """DBSCAN commented"""
+        # train = DBSCAN(eps=15, min_samples=2)
         flat_list = [item for sublist in all_values for item in sublist]
-        train.fit(flat_list)
+        # train.fit(flat_list)
         np_flat_list = np.array(flat_list)
-        y_pred = train.fit_predict(np_flat_list)
-
+        # y_pred = train.fit_predict(np_flat_list)
+        """DBSCAN commented"""
         # f = plt.figure(figsize=(16, 16))
+
+        """DBSCAN commented"""
         f, axes = plt.subplots(nrows = 2, ncols=1)
+        # axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+        # plt.title("DBSCAN")
+        #
+        # n_clusters_ = len(set(train.labels_)) - (1 if -1 in labels else 0)
+        # print("Estimated number of clusters: %d" % n_clusters_)
+        """DBSCAN commented"""
+        """kMeans clustering begins here"""
+        y_pred = KMeans(n_clusters=10, random_state=0).fit_predict(np_flat_list)
         axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
-        plt.title("DBSCAN")
-
-        n_clusters_ = len(set(train.labels_)) - (1 if -1 in labels else 0)
-        print("Estimated number of clusters: %d" % n_clusters_)
 
 
+
+        """kMeans clustering ends here"""
         # f = plt.figure(figsize=(16, 16))
         sns.set(palette='bright')
         for i in range(len(labels)):
+            # p = plt.scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred)
             # p = plt.scatter(x[i],y[i])
             p = axes[1].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
             plt.annotate(labels[i],
