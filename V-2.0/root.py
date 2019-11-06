@@ -444,6 +444,20 @@ class Root(Tk):
         n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
         print("Estimated number of clusters: %d" % n_clusters_)
 
+        s=y_pred
+        clusters_dict = {}
+
+        for t in zip(s, labels):
+            try:
+                if clusters_dict[str(t[0])]:
+                    clusters_dict[str(t[0])].append(t[1])
+                    
+            except KeyError:
+                clusters_dict[str(t[0])] = [t[1]]
+
+        print(clusters_dict)
+                
+
 
         """kMeans clustering ends here"""
         # f = plt.figure(figsize=(16, 16))
