@@ -62,7 +62,7 @@ def adding_special_tokens(text1):
     tar = []
     for line in lines:
 
-        marked_text = " [CLS] " + line +" [SEP] "
+        marked_text = " [CLS] " + line +" । [SEP] "
         tar.append(marked_text)
 #         print(tar)
     return tar
@@ -444,18 +444,61 @@ class Root(Tk):
         n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
         print("Estimated number of clusters: %d" % n_clusters_)
 
+        new_sent = sent_dic
+
+        c = len(labels)
+        # print("length of labels")
+        # print(c)
+        j = 0
+        i = len(new_sent)
+        t = 0
+
+        sentencelistofsomesort = []
+
+        for k in new_sent:
+            sentencelistofsomesort.append(k)
+
+
+        sentencetrackinglist = []
+
+        while j < c:
+        #     print("j count")
+        #     print(j)
+            
+        #     print("current label")
+        #     print(labels[j])
+            if labels[j] != '।':
+        #         print("yes")
+        #         print(t)
+                sentencetrackinglist.append(sentencelistofsomesort[t])
+            else:
+                sentencetrackinglist.append(sentencelistofsomesort[t])
+        #         print("next sentence")
+                t += 1
+            
+            j += 1
+
         s=y_pred
-        clusters_dict = {}
+        anotherclusters_dict = {}
+        cou = 0
 
         for t in zip(s, labels):
             try:
-                if clusters_dict[str(t[0])]:
-                    clusters_dict[str(t[0])].append(t[1])
+                if anotherclusters_dict[str(t[0])]:
+                    anotherclusters_dict[str(t[0])].append(t[1])
+                    anotherclusters_dict[str(t[0])].append(sentencetrackinglist[cou])
+                    cou += 1            
                     
             except KeyError:
-                clusters_dict[str(t[0])] = [t[1]]
+                anotherclusters_dict[str(t[0])] = [t[1]]
+                anotherclusters_dict[str(t[0])].append(sentencetrackinglist[cou])
+                cou += 1
 
-        print(clusters_dict)
+        for i in anotherclusters_dict:
+            print(i)
+            print(anotherclusters_dict[i])
+
+
                 
 
 
