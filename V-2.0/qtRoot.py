@@ -1,5 +1,6 @@
 #GUI
-from PyQt5.QtWidgets import QMainWindow, QApplication,QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication,QPushButton,QMenu, QVBoxLayout, QSizePolicy, QMessageBox, QWidget
+
 import sys
 import random
 #matplotlibxpyqt
@@ -250,11 +251,12 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.left = 10
         self.top = 10
-        self.title = 'PyQt5 matplotlib example - pythonspot.com'
-        self.width = 640
-        self.height = 400
+        self.title = 'Bert-ender'
+        self.width = 1000
+        self.height = 800
         self.initUI()
-        self. PlotCanvas()
+        # self. PlotCanvas()
+
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -262,13 +264,132 @@ class MainWindow(QMainWindow):
         # m = PlotCanvas(self, width=5, height=4)
         # m.move(0,0)
 
-        button = QPushButton('PyQt5 button', self)
-        button.setToolTip('This s an example button')
-        button.move(500,0)
-        button.resize(140,100)
-        self.PlotCanvas(FigureCanvas)
+        button = QPushButton('Cluster', self)
+        button.setToolTip('Cluster')
+        button.move(0,0)
+        button.resize(100,100)
+        m = PlotCanvas(self,width=5, height=4)
+        m.move(0,200)
         self.show()
-    def PlotCanvas(self,FigureCanvas):
+#     def PlotCanvas(self,FigureCanvas):
+#         global labels, sent_dic, all_values
+#         for text in adding_special_tokens(args.text1):
+#             # method(text)
+#             print(text)
+#             token_embeddings, re_tokenized_text, segments_ids = method(text)
+# # print(re_tokenized_text)
+#
+#             # layers(token_embeddings,args.start_layer, args.end_layer)
+#             token_vecs_sum = layers(token_embeddings, args.start_layer, args.end_layer)
+# #     for i,x in enumerate(re_tokenized_text):
+# #         print (i,x)
+#
+#             arr = [t.numpy() for t in token_vecs_sum]
+#
+#             # re_tokenized_text = another_clean(re_tokenized_text)
+#             tsne(re_tokenized_text,arr,text, segments_ids)
+#
+#             print("RETOKENIZED")
+#             print(re_tokenized_text)
+#
+#             # for i in re_tokenized_text:
+#             #     all_text.append(i)
+#
+#
+#
+#             print("RETOKENIZED")
+#             print(re_tokenized_text)
+#             print(labels)
+#
+#         # print("All text")
+#         # print(all_text)
+#
+#         print("All Values: ")
+#         print(all_values)
+#
+#
+#
+#
+#
+#
+#
+#
+#         """plotting starts here"""
+#
+#         prop = fm.FontProperties(fname='kalpurush.ttf')
+#         x = []
+#         y = []
+#
+#         count = 0
+#         print("k")
+#         removing_cls_sep(labels, all_values)
+#         for t in aff:
+#             j = t
+#             for k in j:
+#                 x.append(k[0])
+#                 y.append(k[1])
+#         #         print(k[0])
+#
+#                 count = count + 1
+#         """DBSCAN commented"""
+#         # train = DBSCAN(eps=15, min_samples=2)
+#         flat_list = [item for sublist in aff for item in sublist]
+#         # train.fit(flat_list)
+#         np_flat_list = np.array(flat_list)
+#         # y_pred = train.fit_predict(np_flat_list)
+#         """DBSCAN commented"""
+#         # f = plt.figure(figsize=(16, 16))
+#
+#         """DBSCAN commented"""
+#         f, axes = plt.subplots(nrows = 2, ncols=1)
+#         # axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+#         # plt.title("DBSCAN")
+#         #
+#         # n_clusters_ = len(set(train.labels_)) - (1 if -1 in labels else 0)
+#         # print("Estimated number of clusters: %d" % n_clusters_)
+#         """DBSCAN commented"""
+#         """kMeans clustering begins here"""
+#         y_pred = KMeans(n_clusters=8, random_state=0).fit_predict(np_flat_list)
+#         axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+#         n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
+#         print("Estimated number of clusters: %d" % n_clusters_)
+#
+#
+#         """kMeans clustering ends here"""
+#         # f = plt.figure(figsize=(16, 16))
+#         sns.set(palette='bright')
+#         for i in range(len(labels)):
+#             # p = plt.scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred)
+#             # p = plt.scatter(x[i],y[i])
+#             p = axes[1].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+#             plt.annotate(labels[i],
+#                             xy=(x[i], y[i]),
+#                             xytext=(0, 0),
+#                             textcoords='offset points',
+#                             ha='right',
+#                            fontsize=19, fontproperties=prop)
+#
+#
+#
+#         plt.show()
+
+class PlotCanvas(FigureCanvas):
+
+    def __init__(self, parent=None, width=100, height=800, dpi=100):
+        # fig = Figure(figsize=(width, height), dpi=dpi)
+        f, axes = plt.subplots(nrows = 2, ncols=1)
+
+        FigureCanvas.__init__(self, f)
+        self.setParent(parent)
+
+        FigureCanvas.setSizePolicy(self,
+                QSizePolicy.Expanding,
+                QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        self.plot(axes)
+
+
+    def plot(self,axes):
         global labels, sent_dic, all_values
         for text in adding_special_tokens(args.text1):
             # method(text)
@@ -338,7 +459,7 @@ class MainWindow(QMainWindow):
         # f = plt.figure(figsize=(16, 16))
 
         """DBSCAN commented"""
-        f, axes = plt.subplots(nrows = 2, ncols=1)
+        # f, axes = plt.subplots(nrows = 2, ncols=1)
         # axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
         # plt.title("DBSCAN")
         #
@@ -367,10 +488,7 @@ class MainWindow(QMainWindow):
                            fontsize=19, fontproperties=prop)
 
 
-
-        plt.show()
-
-
+        self.draw()
 
 if __name__== '__main__':
 
