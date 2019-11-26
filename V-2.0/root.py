@@ -1,4 +1,8 @@
+import tkinter as tk
+# import tkFont
 from tkinter import *
+from tkinter import font
+# from tkinter.font import Font
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.backend_bases import key_press_handler
 import torch
@@ -35,6 +39,8 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+letssee = []
+anotherclusters_dict = {}
 def removing_cls_sep(text, tokens):
     a = np.array(tokens)
     b = a.flatten()
@@ -62,7 +68,7 @@ def adding_special_tokens(text1):
     tar = []
     for line in lines:
 
-        marked_text = " [CLS] " + line +" [SEP] "
+        marked_text = " [CLS] " + line +" । [SEP] "
         tar.append(marked_text)
 #         print(tar)
     return tar
@@ -444,8 +450,75 @@ class Root(Tk):
         n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
         print("Estimated number of clusters: %d" % n_clusters_)
 
+        new_sent = sent_dic
+
+        c = len(labels)
+        # print("length of labels")
+        # print(c)
+        j = 0
+        i = len(new_sent)
+        t = 0
+
+        sentencelistofsomesort = []
+
+        for k in new_sent:
+            sentencelistofsomesort.append(k)
+
+
+        sentencetrackinglist = []
+
+        while j < c:
+        #     print("j count")
+        #     print(j)
+            
+        #     print("current label")
+        #     print(labels[j])
+            if labels[j] != '।':
+        #         print("yes")
+        #         print(t)
+                sentencetrackinglist.append(sentencelistofsomesort[t])
+            else:
+                sentencetrackinglist.append(sentencelistofsomesort[t])
+        #         print("next sentence")
+                t += 1
+            
+            j += 1
+
+        s=y_pred
+        
+        cou = 0
+
+        for t in zip(s, labels):
+            try:
+                if anotherclusters_dict[str(t[0])]:
+                    anotherclusters_dict[str(t[0])].append(t[1])
+                    anotherclusters_dict[str(t[0])].append(sentencetrackinglist[cou])
+                    cou += 1            
+                    
+            except KeyError:
+                anotherclusters_dict[str(t[0])] = [t[1]]
+                anotherclusters_dict[str(t[0])].append(sentencetrackinglist[cou])
+                cou += 1
+
+        # clone_dictionary = anotherclusters_dict
+
+        
+
+        for i in anotherclusters_dict:
+            print(i)
+            print(anotherclusters_dict[i])
+            letssee.append(i)
+            letssee.append(anotherclusters_dict[i])
+
+
+                
+
 
         """kMeans clustering ends here"""
+        
+
+        button1 = Button(self, text="Button 1", fg="red", command = printerfunction)
+
         # f = plt.figure(figsize=(16, 16))
         sns.set(palette='bright')
         for i in range(len(labels)):
@@ -468,11 +541,38 @@ class Root(Tk):
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.update()
         toolbar.pack()
+        button1.update()
+        button1.pack()
+
+        
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
 
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
         """plotting ends here"""
+    
+def printerfunction():
+
+    print("something got clicked?")
+    another_root = Tk()
+    # another_text = tk.Text(another_root)
+
+    # myFont = Font(family = "kalpurush.ttf", size = 12)
+    # text.configure(font = myFont)
+    another_frame = Frame(another_root, width = 1700, height = 1400)
+
+    # something = messagebox.showinfo("Title", "a Tk MessageBox")
+    # something.pack()
+
+    # label = tk.Text(another_root, font = ('kalpurush.ttf'))
+    # helv36 = tkFont.Font(family="Helvetica",size=36,weight="bold")
+    # label = tkFont.Font(family = "kalpurush.ttf")
+    label = Label(another_root, text=anotherclusters_dict)
+    label.config(font=('Lohit Bengali', 54))
+    
+    label.pack()
+    another_root.mainloop()
+
 
 if __name__== '__main__':
 
