@@ -405,6 +405,8 @@ class Root(Tk):
         "Menu bar functionality starts here"
         def new_window():
             print("New window open")
+            window = Toplevel(self)
+            window.minsize(width=800, height=500)
 
 
         "Menu bar functionality ends here"
@@ -482,7 +484,12 @@ class Root(Tk):
         filemenu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="Option", menu=filemenu)
         self.config(menu=menubar)
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
+        canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
+
+        text_input = Entry(self)
+        text_input.pack(side = LEFT)
+        input_button=Button(self, height=1, width=10, text="Find", command=lambda: retrieve_input())
+        input_button.pack(side = LEFT)
 
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
