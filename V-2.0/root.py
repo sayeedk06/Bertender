@@ -35,6 +35,25 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+
+def plottingdesiredword(l,x,y,w):
+    indexforelist = []
+    countfore = 0
+    for i in l:
+        if i == w:
+            indexforelist.append(countfore)
+        countfore +=1
+    print(indexforelist)
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+        
+    plt.plot(mappingxco_ordinates, mappingyco_ordinates, 'o', color='black')
+    
+
 def removing_cls_sep(text, tokens):
     a = np.array(tokens)
     b = a.flatten()
@@ -421,6 +440,13 @@ class Root(Tk):
         #         print(k[0])
 
                 count = count + 1
+
+        tuplex = tuple(x)
+        tupley = tuple(y)
+        labelfore = labels
+        
+        plottingdesiredword(labelfore, tuplex, tupley, "।")
+
         """DBSCAN commented"""
         # train = DBSCAN(eps=15, min_samples=2)
         flat_list = [item for sublist in aff for item in sublist]
