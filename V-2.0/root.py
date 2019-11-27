@@ -402,7 +402,12 @@ class Root(Tk):
             canvas.draw()
 # mouse click event ends here
 
+        "Menu bar functionality starts here"
+        def new_window():
+            print("New window open")
 
+
+        "Menu bar functionality ends here"
 
         """plotting starts here"""
 
@@ -439,7 +444,7 @@ class Root(Tk):
         # print("Estimated number of clusters: %d" % n_clusters_)
         """DBSCAN commented"""
         """kMeans clustering begins here"""
-        y_pred = KMeans(n_clusters=8, random_state=0).fit_predict(np_flat_list)
+        y_pred = KMeans(n_clusters=5, random_state=0).fit_predict(np_flat_list)
         axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
         n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
         print("Estimated number of clusters: %d" % n_clusters_)
@@ -468,6 +473,15 @@ class Root(Tk):
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.update()
         toolbar.pack()
+
+        menubar = Menu(self)
+
+        filemenu = Menu(menubar, tearoff=0)
+        filemenu.add_command(label="Advanced options", command=new_window)
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.quit)
+        menubar.add_cascade(label="Option", menu=filemenu)
+        self.config(menu=menubar)
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
 
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
