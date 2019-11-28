@@ -1,6 +1,7 @@
 from tkinter import *
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.backend_bases import key_press_handler
+from matplotlib.figure import Figure
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 import logging
@@ -35,6 +36,31 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+#Finding word instances starts here
+def plottingdesiredword(label,x,y,word):
+    print("Initial:\n")
+    print(x)
+    print(y)
+    indexforelist = []
+    countfore = 0
+    for i in label:
+        if i == word:
+            indexforelist.append(countfore)
+        countfore +=1
+    print(indexforelist)
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+
+    print("function")
+    print(mappingxco_ordinates)
+    print(mappingyco_ordinates)
+    return mappingxco_ordinates , mappingyco_ordinates
+#Finding word instances ends here
+
 def removing_cls_sep(text, tokens):
     a = np.array(tokens)
     b = a.flatten()
@@ -403,12 +429,21 @@ class Root(Tk):
 # mouse click event ends here
 
         "Menu bar functionality starts here"
-        def new_window():
-            print("New window open")
+        def new_window(mapx,mapy):
+            # print(mapx)
+            # print("\n")
+            # print(mapy)
             window = Toplevel(self)
             window.minsize(width=800, height=500)
+            fig, axes1 = plt.subplots()
 
 
+            axes1.scatter(mapx, mapy, cmap='Paired')
+            # plt.show()
+            canvas = FigureCanvasTkAgg(fig, window)
+            plot_widget = canvas.get_tk_widget()
+            plot_widget.pack(side = BOTTOM, fill = BOTH, expand = True)
+            canvas.draw()
         "Menu bar functionality ends here"
 
         """plotting starts here"""
@@ -467,6 +502,22 @@ class Root(Tk):
                            fontsize=19, fontproperties=prop)
 
 
+        """
+        Euclidean distance measurement starts here
+        """
+        tuplex = tuple(x)
+        tupley = tuple(y)
+
+        print(tuplex)
+        print(tupley)
+        # label_for_eucl = labels
+        map_x, map_y = plottingdesiredword(labels, tuplex, tupley, "আমি")
+
+
+
+        """
+        Euclidian distance measurement ends here
+        """
 
         canvas = FigureCanvasTkAgg(f, self)
         f.canvas.mpl_connect('button_press_event', on_click)
@@ -479,7 +530,7 @@ class Root(Tk):
         menubar = Menu(self)
 
         filemenu = Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Advanced options", command=new_window)
+        # filemenu.add_command(label="Advanced options", command=lambda:new_window(map_x,map_y))
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="Option", menu=filemenu)
@@ -488,7 +539,7 @@ class Root(Tk):
 
         text_input = Entry(self)
         text_input.pack(side = LEFT)
-        input_button=Button(self, height=1, width=10, text="Find", command=lambda: retrieve_input())
+        input_button=Button(self, height=1, width=10, text="Find", command=lambda: new_window(map_x,map_y))
         input_button.pack(side = LEFT)
 
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
