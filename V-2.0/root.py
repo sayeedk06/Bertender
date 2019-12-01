@@ -17,6 +17,9 @@ import argparse
 #clustering
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
+#euclideandistance
+from sklearn.neighbors import DistanceMetric
+dist = DistanceMetric.get_metric('euclidean')
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 # Load pre-trained model (weights)
@@ -37,15 +40,16 @@ sent_dic = dict()
 all_values = []
 aff = []
 
-#Finding the euclidean distance starts here
-def findingeuclideandistance(label,x,y,word):
+#Dictionary of the euclidean distances starts here
+def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
     indexforelist = []
     countfore = 0
+    
     for i in label:
         if i == word:
             indexforelist.append(countfore)
         countfore +=1
-
+        
     mappingxco_ordinates = []
     mappingyco_ordinates = []
 
@@ -53,16 +57,46 @@ def findingeuclideandistance(label,x,y,word):
         mappingxco_ordinates.append(x[i])
         mappingyco_ordinates.append(y[i])
         
+    lengthofspecifiedwordfindings = len(mappingxco_ordinates)
+    
     xypairedlist = []
     
-    length = len(mappingxco_ordinates)
+    for i in range (0,lengthofspecifiedwordfindings):
+        k = []
+        k.append(mappingxco_ordinates[i])
+        k.append(mappingyco_ordinates[i])
+        xypairedlist.append(k)
+
+    a = dist.pairwise(xypairedlist)
     
-    for i in range(0,length):
-        s = [mappingxco_ordinates[i], mappingyco_ordinates[i]]
-        xypairedlist.append(s)
-  
-    return xypairedlist
-#Finding the euclidean distance ends here
+    count = 0
+    distance_list = []
+    
+    for i in a:
+        for j in i:
+            count += 1
+            distance_list.append(j)
+            
+    listco = [] # a list in the order the distances are shown
+    
+    for i in xypairedlist:
+        for j in xypairedlist:
+            listco.append(i)
+            listco.append(j)
+            
+    dictionaryofdistances = dict()
+
+    for index, item in enumerate(distance_list):
+        target_start_index = 2 * index
+        target_end_index = 2 * index + 1
+
+        dictionaryofdistances[item] = listco[target_start_index:(target_end_index + 1)]
+
+    print("This is the dictionary")
+    print(dictionaryofdistances)
+
+    return dictionaryofdistances
+#Dictionary of the euclidean distances ends here
 #Finding word instances starts here
 def plottingdesiredword(label,x,y,word):
     print("Initial:\n")
@@ -535,12 +569,9 @@ class Root(Tk):
         tuplex = tuple(x)
         tupley = tuple(y)
 
-        print(tuplex)
-        print(tupley)
-        # label_for_eucl = labels
         map_x, map_y = plottingdesiredword(labels, tuplex, tupley, "আমি")
 
-        xypaired = findingeuclideandistance(labels, tuplex, tupley, 'আমি')
+        dictionaryofdistances = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, 'আমি')
 
 
 
