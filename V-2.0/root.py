@@ -36,6 +36,33 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+
+#Finding the euclidean distance starts here
+def findingeuclideandistance(label,x,y,word):
+    indexforelist = []
+    countfore = 0
+    for i in label:
+        if i == word:
+            indexforelist.append(countfore)
+        countfore +=1
+
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+        
+    xypairedlist = []
+    
+    length = len(mappingxco_ordinates)
+    
+    for i in range(0,length):
+        s = [mappingxco_ordinates[i], mappingyco_ordinates[i]]
+        xypairedlist.append(s)
+  
+    return xypairedlist
+#Finding the euclidean distance ends here
 #Finding word instances starts here
 def plottingdesiredword(label,x,y,word):
     print("Initial:\n")
@@ -512,6 +539,8 @@ class Root(Tk):
         print(tupley)
         # label_for_eucl = labels
         map_x, map_y = plottingdesiredword(labels, tuplex, tupley, "আমি")
+
+        xypaired = findingeuclideandistance(labels, tuplex, tupley, 'আমি')
 
 
 
