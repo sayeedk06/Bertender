@@ -132,7 +132,13 @@ def plottingthefurthestpoints(dictionary, distance_list):
 
 def plottingtheclosestpoints(dictionary, distance_list):
     
-    minimumdistance = min(distance_list)
+    for i in distance_list:
+        print(i)
+        if i == 0.0:
+            distance_list.remove(i)
+#             np.delete(distance_list, np.argwhere(distance_list == i))
+    
+
     
     thetwocoordinates = []
     
