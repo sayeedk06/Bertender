@@ -77,7 +77,7 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
             count += 1
             distance_list.append(j)
             
-    listco = [] # a list in the order the distances are shown
+    listco = [] #a list in the order the distances are shown
     
     for i in xypairedlist:
         for j in xypairedlist:
@@ -92,11 +92,105 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
 
         dictionaryofdistances[item] = listco[target_start_index:(target_end_index + 1)]
 
-    print("This is the dictionary")
-    print(dictionaryofdistances)
-
-    return dictionaryofdistances
+    
+    
+    return dictionaryofdistances, distance_list
 #Dictionary of the euclidean distances ends here
+
+#Plotting the furthest words starts here
+def plottingthefurthestpoints(dictionary, distance_list):
+    
+    maximumdistance = max(distance_list)
+    
+    thetwocoordinates = []
+    
+    for i in dictionary:
+        if i == maximumdistance:
+            thetwocoordinates.append(dictionary[i])
+        
+    countinhere = 0
+    maxtwox = []
+    maxtwoy = []
+    
+    for i in thetwocoordinates:
+        for j in i:
+            maxtwox.append(j[0])
+            maxtwoy.append(j[1])
+            
+    # plt.plot(maxtwox, maxtwoy, 'o', color='blue')
+    
+    # fig, axes1 = plt.subplots()
+    # axes1.scatter(maxtwox, maxtwoy, cmap='Paired')
+    # axes1.set_title('Points of the word with the furthest distance')
+
+    return maxtwox, maxtwoy
+
+
+#Plotting the furthest words ends here 
+
+#Plotting the closest words starts here
+
+def plottingtheclosestpoints(dictionary, distance_list):
+    
+    minimumdistance = min(distance_list)
+    
+    thetwocoordinates = []
+    
+    for i in dictionary:
+        if i == minimumdistance:
+            thetwocoordinates.append(dictionary[i])
+        
+    countinhere = 0
+    mintwox = []
+    mintwoy = []
+    
+    for i in thetwocoordinates:
+        for j in i:
+            mintwox.append(j[0])
+            mintwoy.append(j[1])
+            
+    # plt.plot(mintwox, mintwoy, 'o', color='blue')
+    
+    # fig, axes1 = plt.subplots()
+    # axes1.scatter(mintwox, mintwoy, cmap='Paired')
+    # axes1.set_title('Points of the word with the closest distance')
+    
+    return mintwox, mintwoy
+
+#Plotting the closest words ends here 
+
+
+
+#Plotting the words outside a certain boundary starts here
+
+def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
+    
+    
+    thetwocoordinates = []
+    
+    for i in dictionary:
+        if i > boundary:
+            
+            thetwocoordinates.append(dictionary[i])
+        
+    countinhere = 0
+    therestx = []
+    theresty = []
+    
+    for i in thetwocoordinates:
+        for j in i:
+            therestx.append(j[0])
+            theresty.append(j[1])
+    
+    # fig, axes1 = plt.subplots()
+    
+    # axes1.scatter(therestx, theresty, cmap='Paired')
+    # axes1.set_title('Points of the word outside the set boundary')
+    
+    return therestx, thetwoy
+    
+#Plotting the words outside a certain boundary ends here
+
 #Finding word instances starts here
 def plottingdesiredword(label,x,y,word):
     print("Initial:\n")
@@ -571,9 +665,16 @@ class Root(Tk):
 
         map_x, map_y = plottingdesiredword(labels, tuplex, tupley, "আমি")
 
-        dictionaryofdistances = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, 'আমি')
+        dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labelfore, tuplex, tupley, "আমি")
 
+        """
+        maxtwox, maxtwoy = plottingthefurthestpoints(dictionary, distance_list)
 
+        mintwox, mintwoy = plottingtheclosestpoints(dictionary, distance_list)
+
+        therestx, theresty = plottingthe_words_outside_a_boundary(dictionary, distance_list, 100)
+
+        """
 
         """
         Euclidian distance measurement ends here
