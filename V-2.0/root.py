@@ -16,6 +16,10 @@ import argparse
 #clustering
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
+#euclideandistance
+from sklearn.neighbors import DistanceMetric
+dist = DistanceMetric.get_metric('euclidean')
+
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 # Load pre-trained model (weights)
@@ -35,6 +39,31 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+#Finding word instances starts here
+def plottingdesiredword(label,x,y,word):
+    print("Initial:\n")
+    print(x)
+    print(y)
+    indexforelist = []
+    countfore = 0
+    for i in label:
+        if i == word:
+            indexforelist.append(countfore)
+        countfore +=1
+    print(indexforelist)
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+
+    print("function")
+    print(mappingxco_ordinates)
+    print(mappingyco_ordinates)
+    return mappingxco_ordinates , mappingyco_ordinates
+#Finding word instances ends here
+
 def removing_cls_sep(text, tokens):
     a = np.array(tokens)
     b = a.flatten()
@@ -401,7 +430,28 @@ class Root(Tk):
             self.text_show.remove()
             canvas.draw()
 # mouse click event ends here
+        "Menu bar functionality starts here"
+        def new_window(tuplex,tupley):
 
+            mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
+            window = Toplevel(self)
+            window.minsize(width=800, height=500)
+            fig, axes1 = plt.subplots()
+
+
+            axes1.scatter(mapx, mapy, cmap='Paired')
+
+            word_canvas = FigureCanvasTkAgg(fig, window)
+            plot_widget = word_canvas.get_tk_widget()
+            plot_widget.pack(side = TOP, fill = BOTH, expand = True)
+
+
+
+            slider = Scale(window, from_=0, to=100, orient=HORIZONTAL)
+            slider.pack()
+            word_canvas.draw()
+
+        "Menu bar functionality ends here"
 
 
         """plotting starts here"""
@@ -459,7 +509,16 @@ class Root(Tk):
                             ha='right',
                            fontsize=19, fontproperties=prop)
 
+        """
+        Euclidean distance measurement starts here
+        """
+        # tuplex = tuple(x)
+        # tupley = tuple(y)
 
+
+        """
+        Euclidian distance measurement ends here
+        """
 
         canvas = FigureCanvasTkAgg(f, self)
         f.canvas.mpl_connect('button_press_event', on_click)
@@ -468,8 +527,13 @@ class Root(Tk):
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.update()
         toolbar.pack()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
 
+        canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
+
+        text_input = Entry(self)
+        text_input.pack(side = LEFT)
+        input_button=Button(self, height=1, width=10, text="Find", command=lambda: new_window(x,y))
+        input_button.pack(side = LEFT)
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
         """plotting ends here"""
