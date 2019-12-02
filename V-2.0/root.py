@@ -39,6 +39,95 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+
+#Dictionary of the euclidean distances starts here
+def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
+    indexforelist = []
+    countfore = 0
+    
+    for i in label:
+        if i == word:
+            indexforelist.append(countfore)
+        countfore +=1
+        
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+        
+    lengthofspecifiedwordfindings = len(mappingxco_ordinates)
+    
+    xypairedlist = []
+    
+    for i in range (0,lengthofspecifiedwordfindings):
+        k = []
+        k.append(mappingxco_ordinates[i])
+        k.append(mappingyco_ordinates[i])
+        xypairedlist.append(k)
+
+    a = dist.pairwise(xypairedlist)
+    
+    count = 0
+    distance_list = []
+    
+    for i in a:
+        for j in i:
+            count += 1
+            distance_list.append(j)
+            
+    listco = [] #a list in the order the distances are shown
+    
+    for i in xypairedlist:
+        for j in xypairedlist:
+            listco.append(i)
+            listco.append(j)
+            
+    dictionaryofdistances = dict()
+
+    for index, item in enumerate(distance_list):
+        target_start_index = 2 * index
+        target_end_index = 2 * index + 1
+
+        dictionaryofdistances[item] = listco[target_start_index:(target_end_index + 1)]
+
+    
+    
+    return dictionaryofdistances, distance_list
+#Dictionary of the euclidean distances ends here
+
+
+#Plotting the words outside a certain boundary starts here
+
+def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
+    
+    
+    thetwocoordinates = []
+    
+    for i in dictionary:
+        if i > boundary:
+            
+            thetwocoordinates.append(dictionary[i])
+        
+    therestx = []
+    theresty = []
+    
+    for i in thetwocoordinates:
+        for j in i:
+            therestx.append(j[0])
+            theresty.append(j[1])
+    
+    # fig, axes1 = plt.subplots()
+    
+    # axes1.scatter(therestx, theresty, cmap='Paired')
+    # axes1.set_title('Points of the word outside the set boundary')
+    
+    return therestx, theresty
+    
+#Plotting the words outside a certain boundary ends here
+
+
 #Finding word instances starts here
 def plottingdesiredword(label,x,y,word):
     print("Initial:\n")
@@ -436,8 +525,17 @@ class Root(Tk):
 
             def getboundary(event):
                 print(slider.get())
-                
+                boundary = slider.get()
+                therestx, theresty = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
+                print("x co ordinates outside the boundary")
+                print(therestx)
+                print("y co ordinates outside the boundary")
+                print(theresty)
+            
             mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
+            dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
+            maximumdistance = max(distance_list)
+
             window = Toplevel(self)
             window.minsize(width=800, height=500)
             fig, axes1 = plt.subplots()
@@ -451,7 +549,7 @@ class Root(Tk):
 
 
             # var = DoubleVar()
-            slider = Scale(window,from_=0, to=100, orient=HORIZONTAL,command=getboundary)
+            slider = Scale(window,from_=0, to=maximumdistance, orient=HORIZONTAL,command=getboundary)
             slider.pack()
             # print(var.get())
             word_canvas.draw()
