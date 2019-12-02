@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
 import seaborn as sns
+from matplotlib.animation import FuncAnimation
 #commandline
 import argparse
 #clustering
@@ -44,23 +45,23 @@ aff = []
 def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
     indexforelist = []
     countfore = 0
-    
+
     for i in label:
         if i == word:
             indexforelist.append(countfore)
         countfore +=1
-        
+
     mappingxco_ordinates = []
     mappingyco_ordinates = []
 
     for i in indexforelist:
         mappingxco_ordinates.append(x[i])
         mappingyco_ordinates.append(y[i])
-        
+
     lengthofspecifiedwordfindings = len(mappingxco_ordinates)
-    
+
     xypairedlist = []
-    
+
     for i in range (0,lengthofspecifiedwordfindings):
         k = []
         k.append(mappingxco_ordinates[i])
@@ -68,22 +69,22 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
         xypairedlist.append(k)
 
     a = dist.pairwise(xypairedlist)
-    
+
     count = 0
     distance_list = []
-    
+
     for i in a:
         for j in i:
             count += 1
             distance_list.append(j)
-            
+
     listco = [] #a list in the order the distances are shown
-    
+
     for i in xypairedlist:
         for j in xypairedlist:
             listco.append(i)
             listco.append(j)
-            
+
     dictionaryofdistances = dict()
 
     for index, item in enumerate(distance_list):
@@ -92,8 +93,8 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
 
         dictionaryofdistances[item] = listco[target_start_index:(target_end_index + 1)]
 
-    
-    
+
+
     return dictionaryofdistances, distance_list
 #Dictionary of the euclidean distances ends here
 
@@ -101,30 +102,30 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
 #Plotting the words outside a certain boundary starts here
 
 def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
-    
-    
+
+
     thetwocoordinates = []
-    
+
     for i in dictionary:
         if i > boundary:
-            
+
             thetwocoordinates.append(dictionary[i])
-        
+
     therestx = []
     theresty = []
-    
+
     for i in thetwocoordinates:
         for j in i:
             therestx.append(j[0])
             theresty.append(j[1])
-    
+
     # fig, axes1 = plt.subplots()
-    
+
     # axes1.scatter(therestx, theresty, cmap='Paired')
     # axes1.set_title('Points of the word outside the set boundary')
-    
+
     return therestx, theresty
-    
+
 #Plotting the words outside a certain boundary ends here
 
 
@@ -524,14 +525,19 @@ class Root(Tk):
         def new_window(tuplex,tupley):
 
             def getboundary(event):
-                print(slider.get())
+                # print(slider.get())
                 boundary = slider.get()
                 therestx, theresty = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
                 print("x co ordinates outside the boundary")
                 print(therestx)
                 print("y co ordinates outside the boundary")
                 print(theresty)
-            
+                # axes1.scatter(therestx,theresty, cmap='Paired')
+                axes1.clear()
+                axes1.scatter(therestx,theresty, cmap='Paired')
+                word_canvas.draw()
+
+
             mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
             dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
             maximumdistance = max(distance_list)
