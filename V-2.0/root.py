@@ -430,9 +430,13 @@ class Root(Tk):
             self.text_show.remove()
             canvas.draw()
 # mouse click event ends here
+
         "Menu bar functionality starts here"
         def new_window(tuplex,tupley):
 
+            def getboundary(event):
+                print(slider.get())
+                
             mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
             window = Toplevel(self)
             window.minsize(width=800, height=500)
@@ -446,9 +450,10 @@ class Root(Tk):
             plot_widget.pack(side = TOP, fill = BOTH, expand = True)
 
 
-
-            slider = Scale(window, from_=0, to=100, orient=HORIZONTAL)
+            # var = DoubleVar()
+            slider = Scale(window,from_=0, to=100, orient=HORIZONTAL,command=getboundary)
             slider.pack()
+            # print(var.get())
             word_canvas.draw()
 
         "Menu bar functionality ends here"
