@@ -671,7 +671,7 @@ class Root(Tk):
 
         map_x, map_y = plottingdesiredword(labels, tuplex, tupley, "আমি")
 
-        dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labelfore, tuplex, tupley, "আমি")
+        dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, "আমি")
 
         """
         maxtwox, maxtwoy = plottingthefurthestpoints(dictionary, distance_list)
