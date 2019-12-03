@@ -555,8 +555,10 @@ class Root(Tk):
 
 
             # var = DoubleVar()
+            help = Label(window, text="Slide to set boundary",font=("Helvetica", 16))
+            help.pack()
             slider = Scale(window,from_=0, to=maximumdistance, orient=HORIZONTAL,command=getboundary)
-            slider.pack()
+            slider.pack(fill = BOTH)
             # print(var.get())
             word_canvas.draw()
 
