@@ -41,110 +41,6 @@ sent_dic = dict()
 all_values = []
 aff = []
 
-#Tracking clustered labels and their respective sentences starts here
-def trackinglabelsandsentences(labels, sentence_dictionary, clusters, word):
-
-    c = len(labels)
-
-    j = 0
-    i = len(sentence_dictionary)
-    t = 0
-
-    sentencelistofsomesort = []
-
-    for k in sentence_dictionary:
-        sentencelistofsomesort.append(k)
-
-
-    sentencetrackinglist = []
-
-    while j < c:
-        if labels[j] != '।':
-            sentencetrackinglist.append(sentencelistofsomesort[t])
-        else:
-            sentencetrackinglist.append(sentencelistofsomesort[t])
-            t += 1
-
-        j += 1
-
-    clusters_dict = {}
-
-    for t in zip(clusters, labels):
-        try:
-            if clusters_dict[str(t[0])]:
-                clusters_dict[str(t[0])].append(t[1])
-
-        except KeyError:
-            clusters_dict[str(t[0])] = [t[1]]
-
-    clustered_label_list = []
-
-    for i in clusters_dict:
-        clustered_label_list.append(clusters_dict[i])
-
-    anotherclusters_dict = {}
-    cou = 0
-    lease = []
-
-    for t in zip(clusters, labels):
-        try:
-            if anotherclusters_dict[str(t[0])]:
-                anotherclusters_dict[str(t[0])].append(t[1])
-                lease.append(t[1])
-
-                anotherclusters_dict[str(t[0])].append(sentencetrackinglist[cou])
-                cou += 1
-
-        except KeyError:
-            anotherclusters_dict[str(t[0])] = [t[1]]
-
-            anotherclusters_dict[str(t[0])].append(sentencetrackinglist[cou])
-            cou += 1
-
-    highlevellist = []
-
-    for i in anotherclusters_dict.values():
-        highlevellist.append(i)
-
-    even = []
-    odd = []
-
-    for i in highlevellist:
-        iteration = 0
-        for j in i:
-
-            if iteration % 2 == 0:
-
-                even.append(j)
-                iteration += 1
-            else:
-                odd.append(j)
-                iteration += 1
-
-    plottingrestlabelandsentences = []
-
-    length = len(even)
-
-    for i in range(0,length):
-        plottingrestlabelandsentences.append(even[i])
-        plottingrestlabelandsentences.append(odd[i])
-
-    maplabels = []
-    mapsentences = []
-
-    for i in range(0,length):
-
-        if plottingrestlabelandsentences[i] == word:
-            maplabels.append(plottingrestlabelandsentences[i])
-            mapsentences.append(plottingrestlabelandsentences[i+1])
-
-    return maplabels, mapsentences
-
-
-
-
-#Tracking clustered labels and their respective sentences ends here
-
 #Dictionary of the euclidean distances starts here
 def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
     indexforelist = []
@@ -626,17 +522,12 @@ class Root(Tk):
 # mouse click event ends here
 
         "Menu bar functionality starts here"
-        def new_window(x,y):
+        def new_window(tuplex,tupley):
 
             def getboundary(event):
                 # print(slider.get())
                 boundary = slider.get()
                 therestx, theresty = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
-                maplabels, mapsentences = trackinglabelsandsentences(labels, sent_dic, y_pred, text_input.get())
-                print("The labels")
-                print(therestlabels)
-                print("Their respective sentences")
-                print(therestsentences)
                 print("x co ordinates outside the boundary")
                 print(therestx)
                 print("y co ordinates outside the boundary")
@@ -647,9 +538,8 @@ class Root(Tk):
                 word_canvas.draw()
 
 
-            mapx,mapy = plottingdesiredword(labels, x, y, text_input.get())
-            dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, x, y, text_input.get())
-            therestlabels, therestsentences = trackinglabelsandsentences(labels, sent_dic, y_pred, text_input.get())
+            mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
+            dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
             maximumdistance = max(distance_list)
 
             window = Toplevel(self)
