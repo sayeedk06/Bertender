@@ -40,6 +40,18 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+#Finding the remaining sentences starts here
+
+def returning_sentences_of_the_remaining_words(the_remaining_coordinates, sentence_dictionary):
+    sentences = []
+    for key, value in sentence_dictionary.items():
+        for i in value:
+            for j in the_remaining_coordinates:
+                if i == j:
+                    sentences.append(key)
+    return sentences
+
+#Finding the remaining sentences ends here
 
 #Dictionary of the euclidean distances starts here
 def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
@@ -124,7 +136,12 @@ def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
     # axes1.scatter(therestx, theresty, cmap='Paired')
     # axes1.set_title('Points of the word outside the set boundary')
 
-    return therestx, theresty
+    thecoordinates = []
+    for i in thetwocoordinates:
+        for j in i:
+            thecoordinates.append(j)
+
+    return therestx, theresty, thecoordinates
 
 #Plotting the words outside a certain boundary ends here
 
@@ -527,11 +544,15 @@ class Root(Tk):
             def getboundary(event):
                 # print(slider.get())
                 boundary = slider.get()
-                therestx, theresty = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
+                therestx, theresty, thecoordinates = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
+                sentences = returning_sentences_of_the_remaining_words(thecoordinates, sent_dic)
+
                 print("x co ordinates outside the boundary")
                 print(therestx)
                 print("y co ordinates outside the boundary")
                 print(theresty)
+                print("the remaining sentences")
+                print(sentences)
                 # axes1.scatter(therestx,theresty, cmap='Paired')
                 axes1.clear()
                 axes1.scatter(therestx,theresty, cmap='Paired')
