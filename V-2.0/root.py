@@ -442,7 +442,61 @@ def tsne(re_tokenized_text,arr,text, segments_ids):
             sent_dic.setdefault(text, []).append(newlist[track])
             track = track + 1
         # keeping tracks ends here
+"Menu bar functionality starts here"
+def new_window(tuplex,tupley,text_input):
+    prop = fm.FontProperties(fname='kalpurush.ttf')
+    def getboundary(event):
+        # print(slider.get())
+        boundary = slider.get()
+        therestx, theresty, thecoordinates = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
+        sentences = returning_sentences_of_the_remaining_words(thecoordinates, sent_dic)
 
+        print("x co ordinates outside the boundary")
+        print(therestx)
+        print("y co ordinates outside the boundary")
+        print(theresty)
+        print("the remaining sentences")
+        print(sentences)
+        # axes1.scatter(therestx,theresty, cmap='Paired')
+        axes1.clear()
+        axes1.scatter(therestx,theresty, cmap='Paired')
+        word_canvas.draw()
+    def window_click(event):
+        print('you pressed', event.button, event.xdata, event.ydata)
+        xpos, ypos = event.xdata, event.ydata
+        for key in sent_dic:
+            for values in sent_dic[key]:
+                if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
+                    print(key)
+                    text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
+                    word_canvas.draw()
+
+    mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
+    dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
+    maximumdistance = max(distance_list)
+
+    window = Toplevel()
+    window.minsize(width=1080, height=900)
+    fig, axes1 = plt.subplots()
+
+
+    axes1.scatter(mapx, mapy, cmap='Paired')
+
+    word_canvas = FigureCanvasTkAgg(fig, window)
+    # word_canvas.bind("<Button-1>", window_click)
+    word_canvas.mpl_connect('button_press_event', window_click)
+    plot_widget = word_canvas.get_tk_widget()
+    plot_widget.pack(side = TOP, fill = BOTH, expand = True)
+
+
+            # var = DoubleVar()
+    help = Label(window, text="Slide to set boundary",font=("Helvetica", 16))
+    help.pack()
+    slider = Scale(window,from_=0, to=maximumdistance, orient=HORIZONTAL,command=getboundary)
+    slider.pack(fill = BOTH)
+    # print(var.get())
+    word_canvas.draw()
+"Menu bar functionality ends here"
 class Root(Tk):
     """docstring for."""
 
@@ -538,52 +592,6 @@ class Root(Tk):
             canvas.draw()
 # mouse click event ends here
 
-        "Menu bar functionality starts here"
-        def new_window(tuplex,tupley):
-
-            def getboundary(event):
-                # print(slider.get())
-                boundary = slider.get()
-                therestx, theresty, thecoordinates = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
-                sentences = returning_sentences_of_the_remaining_words(thecoordinates, sent_dic)
-
-                print("x co ordinates outside the boundary")
-                print(therestx)
-                print("y co ordinates outside the boundary")
-                print(theresty)
-                print("the remaining sentences")
-                print(sentences)
-                # axes1.scatter(therestx,theresty, cmap='Paired')
-                axes1.clear()
-                axes1.scatter(therestx,theresty, cmap='Paired')
-                word_canvas.draw()
-
-
-            mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
-            dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
-            maximumdistance = max(distance_list)
-
-            window = Toplevel(self)
-            window.minsize(width=800, height=500)
-            fig, axes1 = plt.subplots()
-
-
-            axes1.scatter(mapx, mapy, cmap='Paired')
-
-            word_canvas = FigureCanvasTkAgg(fig, window)
-            plot_widget = word_canvas.get_tk_widget()
-            plot_widget.pack(side = TOP, fill = BOTH, expand = True)
-
-
-            # var = DoubleVar()
-            help = Label(window, text="Slide to set boundary",font=("Helvetica", 16))
-            help.pack()
-            slider = Scale(window,from_=0, to=maximumdistance, orient=HORIZONTAL,command=getboundary)
-            slider.pack(fill = BOTH)
-            # print(var.get())
-            word_canvas.draw()
-
-        "Menu bar functionality ends here"
 
 
         """plotting starts here"""
@@ -664,7 +672,7 @@ class Root(Tk):
 
         text_input = Entry(self)
         text_input.pack(side = LEFT)
-        input_button=Button(self, height=1, width=10, text="Find", command=lambda: new_window(x,y))
+        input_button=Button(self, height=1, width=10, text="Find", command=lambda: new_window(x,y,text_input))
         input_button.pack(side = LEFT)
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
