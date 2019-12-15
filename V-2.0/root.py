@@ -11,11 +11,16 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
 import seaborn as sns
+from matplotlib.animation import FuncAnimation
 #commandline
 import argparse
 #clustering
 from sklearn.cluster import DBSCAN
 from sklearn.cluster import KMeans
+#euclideandistance
+from sklearn.neighbors import DistanceMetric
+dist = DistanceMetric.get_metric('euclidean')
+
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 # Load pre-trained model (weights)
@@ -35,6 +40,137 @@ sent_dic = dict()
 # indexlist = []
 all_values = []
 aff = []
+#Finding the remaining sentences starts here
+
+def returning_sentences_of_the_remaining_words(the_remaining_coordinates, sentence_dictionary):
+    sentences = []
+    for key, value in sentence_dictionary.items():
+        for i in value:
+            for j in the_remaining_coordinates:
+                if i == j:
+                    sentences.append(key)
+    return sentences
+
+#Finding the remaining sentences ends here
+
+#Dictionary of the euclidean distances starts here
+def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
+    indexforelist = []
+    countfore = 0
+
+    for i in label:
+        if i == word:
+            indexforelist.append(countfore)
+        countfore +=1
+
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+
+    lengthofspecifiedwordfindings = len(mappingxco_ordinates)
+
+    xypairedlist = []
+
+    for i in range (0,lengthofspecifiedwordfindings):
+        k = []
+        k.append(mappingxco_ordinates[i])
+        k.append(mappingyco_ordinates[i])
+        xypairedlist.append(k)
+
+    a = dist.pairwise(xypairedlist)
+
+    count = 0
+    distance_list = []
+
+    for i in a:
+        for j in i:
+            count += 1
+            distance_list.append(j)
+
+    listco = [] #a list in the order the distances are shown
+
+    for i in xypairedlist:
+        for j in xypairedlist:
+            listco.append(i)
+            listco.append(j)
+
+    dictionaryofdistances = dict()
+
+    for index, item in enumerate(distance_list):
+        target_start_index = 2 * index
+        target_end_index = 2 * index + 1
+
+        dictionaryofdistances[item] = listco[target_start_index:(target_end_index + 1)]
+
+
+
+    return dictionaryofdistances, distance_list
+#Dictionary of the euclidean distances ends here
+
+
+#Plotting the words outside a certain boundary starts here
+
+def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
+
+
+    thetwocoordinates = []
+
+    for i in dictionary:
+        if i > boundary:
+
+            thetwocoordinates.append(dictionary[i])
+
+    therestx = []
+    theresty = []
+
+    for i in thetwocoordinates:
+        for j in i:
+            therestx.append(j[0])
+            theresty.append(j[1])
+
+    # fig, axes1 = plt.subplots()
+
+    # axes1.scatter(therestx, theresty, cmap='Paired')
+    # axes1.set_title('Points of the word outside the set boundary')
+
+    thecoordinates = []
+    for i in thetwocoordinates:
+        for j in i:
+            thecoordinates.append(j)
+
+    return therestx, theresty, thecoordinates
+
+#Plotting the words outside a certain boundary ends here
+
+
+#Finding word instances starts here
+def plottingdesiredword(label,x,y,word):
+    print("Initial:\n")
+    print(x)
+    print(y)
+    indexforelist = []
+    countfore = 0
+    for i in label:
+        if i == word:
+            indexforelist.append(countfore)
+        countfore +=1
+    print(indexforelist)
+    mappingxco_ordinates = []
+    mappingyco_ordinates = []
+
+    for i in indexforelist:
+        mappingxco_ordinates.append(x[i])
+        mappingyco_ordinates.append(y[i])
+
+    print("function")
+    print(mappingxco_ordinates)
+    print(mappingyco_ordinates)
+    return mappingxco_ordinates , mappingyco_ordinates
+#Finding word instances ends here
+
 def removing_cls_sep(text, tokens):
     a = np.array(tokens)
     b = a.flatten()
@@ -306,7 +442,61 @@ def tsne(re_tokenized_text,arr,text, segments_ids):
             sent_dic.setdefault(text, []).append(newlist[track])
             track = track + 1
         # keeping tracks ends here
+"Menu bar functionality starts here"
+def new_window(tuplex,tupley,text_input):
+    prop = fm.FontProperties(fname='kalpurush.ttf')
+    def getboundary(event):
+        # print(slider.get())
+        boundary = slider.get()
+        therestx, theresty, thecoordinates = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
+        sentences = returning_sentences_of_the_remaining_words(thecoordinates, sent_dic)
 
+        print("x co ordinates outside the boundary")
+        print(therestx)
+        print("y co ordinates outside the boundary")
+        print(theresty)
+        print("the remaining sentences")
+        print(sentences)
+        # axes1.scatter(therestx,theresty, cmap='Paired')
+        axes1.clear()
+        axes1.scatter(therestx,theresty, cmap='Paired')
+        word_canvas.draw()
+    def window_click(event):
+        print('you pressed', event.button, event.xdata, event.ydata)
+        xpos, ypos = event.xdata, event.ydata
+        for key in sent_dic:
+            for values in sent_dic[key]:
+                if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
+                    print(key)
+                    text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
+                    word_canvas.draw()
+
+    mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
+    dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
+    maximumdistance = max(distance_list)
+
+    window = Toplevel()
+    window.minsize(width=1080, height=900)
+    fig, axes1 = plt.subplots()
+
+
+    axes1.scatter(mapx, mapy, cmap='Paired')
+
+    word_canvas = FigureCanvasTkAgg(fig, window)
+    # word_canvas.bind("<Button-1>", window_click)
+    word_canvas.mpl_connect('button_press_event', window_click)
+    plot_widget = word_canvas.get_tk_widget()
+    plot_widget.pack(side = TOP, fill = BOTH, expand = True)
+
+
+            # var = DoubleVar()
+    help = Label(window, text="Slide to set boundary",font=("Helvetica", 16))
+    help.pack()
+    slider = Scale(window,from_=0, to=maximumdistance, orient=HORIZONTAL,command=getboundary)
+    slider.pack(fill = BOTH)
+    # print(var.get())
+    word_canvas.draw()
+"Menu bar functionality ends here"
 class Root(Tk):
     """docstring for."""
 
@@ -459,7 +649,16 @@ class Root(Tk):
                             ha='right',
                            fontsize=19, fontproperties=prop)
 
+        """
+        Euclidean distance measurement starts here
+        """
+        # tuplex = tuple(x)
+        # tupley = tuple(y)
 
+
+        """
+        Euclidian distance measurement ends here
+        """
 
         canvas = FigureCanvasTkAgg(f, self)
         f.canvas.mpl_connect('button_press_event', on_click)
@@ -468,8 +667,13 @@ class Root(Tk):
         toolbar = NavigationToolbar2Tk(canvas, self)
         toolbar.update()
         toolbar.pack()
-        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand = True)
 
+        canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
+
+        text_input = Entry(self)
+        text_input.pack(side = LEFT)
+        input_button=Button(self, height=1, width=10, text="Find", command=lambda: new_window(x,y,text_input))
+        input_button.pack(side = LEFT)
         # canvas.get_tk_widget().pack(side= BOTTOM, fill= BOTH, expand= True)
 
         """plotting ends here"""
