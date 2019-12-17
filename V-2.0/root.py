@@ -20,6 +20,11 @@ from sklearn.cluster import KMeans
 #euclideandistance
 from sklearn.neighbors import DistanceMetric
 dist = DistanceMetric.get_metric('euclidean')
+#autodownload required files
+import subprocess
+
+subprocess.run(["pip","install", "pytorch-transformers==1.0.0"])
+subprocess.run(["pip","install", "pytorch-pretrained-bert==0.6.2"])
 
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
