@@ -42,7 +42,7 @@ all_values = []
 aff = []
 #Finding the remaining sentences starts here
 
-def returning_sentences_of_the_remaining_words(the_remaining_coordinates, sentence_dictionary):
+def source_of_words(the_remaining_coordinates, sentence_dictionary):
     sentences = []
     for key, value in sentence_dictionary.items():
         for i in value:
@@ -54,7 +54,7 @@ def returning_sentences_of_the_remaining_words(the_remaining_coordinates, senten
 #Finding the remaining sentences ends here
 
 #Dictionary of the euclidean distances starts here
-def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
+def distance_x_y(label,x,y,word):
     indexforelist = []
     countfore = 0
 
@@ -70,11 +70,11 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
         mappingxco_ordinates.append(x[i])
         mappingyco_ordinates.append(y[i])
 
-    lengthofspecifiedwordfindings = len(mappingxco_ordinates)
+    length_required = len(mappingxco_ordinates)
 
     xypairedlist = []
 
-    for i in range (0,lengthofspecifiedwordfindings):
+    for i in range (0,length_required):
         k = []
         k.append(mappingxco_ordinates[i])
         k.append(mappingyco_ordinates[i])
@@ -97,36 +97,36 @@ def dictionaryofeuclideandistanceandtheircoordinates(label,x,y,word):
             listco.append(i)
             listco.append(j)
 
-    dictionaryofdistances = dict()
+    distance_dictionary = dict()
 
     for index, item in enumerate(distance_list):
         target_start_index = 2 * index
         target_end_index = 2 * index + 1
 
-        dictionaryofdistances[item] = listco[target_start_index:(target_end_index + 1)]
+        distance_dictionary[item] = listco[target_start_index:(target_end_index + 1)]
 
 
 
-    return dictionaryofdistances, distance_list
+    return distance_dictionary, distance_list
 #Dictionary of the euclidean distances ends here
 
 
 #Plotting the words outside a certain boundary starts here
 
-def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
+def boundary_word_plot(dictionary, distance_list, boundary):
 
 
-    thetwocoordinates = []
+    the_two_boundaries = []
 
     for i in dictionary:
         if i > boundary:
 
-            thetwocoordinates.append(dictionary[i])
+            the_two_boundaries.append(dictionary[i])
 
     therestx = []
     theresty = []
 
-    for i in thetwocoordinates:
+    for i in the_two_boundaries:
         for j in i:
             therestx.append(j[0])
             theresty.append(j[1])
@@ -137,7 +137,7 @@ def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
     # axes1.set_title('Points of the word outside the set boundary')
 
     thecoordinates = []
-    for i in thetwocoordinates:
+    for i in the_two_boundaries:
         for j in i:
             thecoordinates.append(j)
 
@@ -147,17 +147,17 @@ def plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary):
 
 
 #Finding word instances starts here
-def plottingdesiredword(label,x,y,word):
-    print("Initial:\n")
-    print(x)
-    print(y)
+def word_plot(label,x,y,word):
+    # print("Initial:\n")
+    # print(x)
+    # print(y)
     indexforelist = []
     countfore = 0
     for i in label:
         if i == word:
             indexforelist.append(countfore)
         countfore +=1
-    print(indexforelist)
+    # print(indexforelist)
     mappingxco_ordinates = []
     mappingyco_ordinates = []
 
@@ -165,9 +165,9 @@ def plottingdesiredword(label,x,y,word):
         mappingxco_ordinates.append(x[i])
         mappingyco_ordinates.append(y[i])
 
-    print("function")
-    print(mappingxco_ordinates)
-    print(mappingyco_ordinates)
+    # print("function")
+    # print(mappingxco_ordinates)
+    # print(mappingyco_ordinates)
     return mappingxco_ordinates , mappingyco_ordinates
 #Finding word instances ends here
 
@@ -176,9 +176,9 @@ def removing_cls_sep(text, tokens):
     b = a.flatten()
     for i in b:
         i = i[1:-1]
-        print(i)
+        # print(i)
         aff.append(i)
-        print("next")
+        # print("next")
 
     count = 0
     index = []
@@ -192,7 +192,7 @@ def removing_cls_sep(text, tokens):
     for i in sorted(index, reverse = True):
         del text[i]
 
-def adding_special_tokens(text1):
+def add_sp_token(text1):
 
     lines = open('data/%s.txt'% text1, encoding='utf-8').read().split('।')
     tar = []
@@ -200,7 +200,7 @@ def adding_special_tokens(text1):
 
         marked_text = " [CLS] " + line +" [SEP] "
         tar.append(marked_text)
-#         print(tar)
+        # print(tar)
     return tar
 
 def index_list(tokenized_text, indexlist):
@@ -217,7 +217,7 @@ def clean_list(words_list, tokens_list):
     new_list = []
     new_token_list = []
     for index, (word, token) in enumerate(zip(words_list, tokens_list)):
-        print(word)
+        # print(word)
         if word.find('#') == -1:
             new_list.append(word)
             new_token_list.append(token)
@@ -226,9 +226,9 @@ def clean_list(words_list, tokens_list):
 
             if curr_len > 0:
                 prev_word_idx = curr_len - 1
-                print(new_list[prev_word_idx])
+                # print(new_list[prev_word_idx])
                 new_list[prev_word_idx] = new_list[prev_word_idx] + word.replace('#', '')
-                print(new_list[prev_word_idx])
+                # print(new_list[prev_word_idx])
                 new_token_list[prev_word_idx] = int((new_token_list[prev_word_idx]+token)/2)
 
     return new_list, new_token_list
@@ -261,11 +261,11 @@ def method(line1):
 
 
     tokenized_text = tokenizer.tokenize(line1)
-    print("this is tokenized_text")
-    print (tokenized_text)
+    # print("this is tokenized_text")
+    # print (tokenized_text)
     indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-    print("this is indexed_tokens")
-    print(indexed_tokens)
+    # print("this is indexed_tokens")
+    # print(indexed_tokens)
 
     # indexlist = []
 
@@ -282,8 +282,8 @@ def method(line1):
     # print("When the words get tokenized: ")
     # print(tokenized_text)
     re_tokenized_text, re_tokenized_tokens = clean_list(tokenized_text, indexed_tokens)
-    print("Finding the original words back for representation: ")
-    print(re_tokenized_text)
+    # print("Finding the original words back for representation: ")
+    # print(re_tokenized_text)
 
 
     # indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
@@ -292,7 +292,7 @@ def method(line1):
     # print(len(re_indexed_tokens))
     # print("Tokenizing the original form, includes the hash words")
     # for tup in zip(tokenized_text, indexed_tokens):
-    #     print (tup)
+        # print (tup)
 
 
     # for index in sorted(indexlist, reverse = True):
@@ -301,7 +301,7 @@ def method(line1):
 
     #tokenizing just the start words of any subwords, and then zipping it with the complete word
     for tup in zip(re_tokenized_text, re_tokenized_tokens):
-        print (tup)
+        # print (tup)
 
     # def addSentenceId(token_text):
     #     count = 0
@@ -313,12 +313,12 @@ def method(line1):
     #     segments_ids1 = [0] * count
     #     segments_ids2 = [1] * (len(token_text) - count)
     #     segments_ids = segments_ids1 + segments_ids2
-    #     print(segments_ids)
+        # print(segments_ids)
     #     # segments_ids = [1] * len(tokenized_text)
-    #     # print (segments_ids)
+        # print (segments_ids)
     #     return segments_ids
 
-    segments_ids = [1] * len(re_tokenized_text)
+        segments_ids = [1] * len(re_tokenized_text)
 
     # Convert inputs to PyTorch tensors
     tokens_tensor = torch.tensor([re_tokenized_tokens])
@@ -334,16 +334,16 @@ def method(line1):
     with torch.no_grad():
         encoded_layers, _ = model(tokens_tensor, segments_tensors)
 
-    print ("Number of layers:", len(encoded_layers))
+    # print ("Number of layers:", len(encoded_layers))
     layer_i = 0
 
-    print ("Number of batches:", len(encoded_layers[layer_i]))
+    # print ("Number of batches:", len(encoded_layers[layer_i]))
     batch_i = 0
 
-    print ("Number of tokens:", len(encoded_layers[layer_i][batch_i]))
+    # print ("Number of tokens:", len(encoded_layers[layer_i][batch_i]))
     token_i = 0
 
-    print ("Number of hidden units:", len(encoded_layers[layer_i][batch_i][token_i]))
+    # print ("Number of hidden units:", len(encoded_layers[layer_i][batch_i][token_i]))
 
     # Convert the hidden state embeddings into single token vectors
 
@@ -368,8 +368,8 @@ def method(line1):
         # token_embeddings.append(hidden_layers)
 
     # Sanity check the dimensions:
-    print ("Number of tokens in sequence:", len(token_embeddings))
-    print ("Number of layers per token:", len(token_embeddings[0]))
+    # print ("Number of tokens in sequence:", len(token_embeddings))
+    # print ("Number of layers per token:", len(token_embeddings[0]))
 
 
 
@@ -393,7 +393,7 @@ def layers(token_embeddings,start_layer, end_layer):
         # Use `sum_vec` to represent `token`.
 
         token_vecs_sum.append(sum_vec)
-    print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
+    # print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 
     return token_vecs_sum
 
@@ -409,26 +409,26 @@ def tsne(re_tokenized_text,arr,text, segments_ids):
         # if '#' not in x and '[UNK]' not in x:
 
         tokens.append(arr[i])
-        print('tsne here:' + x)
+        # print('tsne here:' + x)
         labels.append(x)
-        print(labels)
+        # print(labels)
 
 
     tsne_model = TSNE(perplexity = args.perplexity, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
     new_values = tsne_model.fit_transform(tokens)
     temp_values = (new_values.tolist())
-    print("TEMP")
-    print(temp_values)
+    # print("TEMP")
+    # print(temp_values)
 
-    print("RETOKENIZED")
-    print(re_tokenized_text)
+    # print("RETOKENIZED")
+    # print(re_tokenized_text)
 
     # temp_values = another_clean(re_tokenized_text, temp_values)
 
     all_values.append(temp_values)
 
-    print("New values")
-    print(all_values)
+    # print("New values")
+    # print(all_values)
 
 
 
@@ -448,31 +448,31 @@ def new_window(tuplex,tupley,text_input):
     def getboundary(event):
         # print(slider.get())
         boundary = slider.get()
-        therestx, theresty, thecoordinates = plottingthe_words_outside_a_boundary(dictionary, distance_list, boundary)
-        sentences = returning_sentences_of_the_remaining_words(thecoordinates, sent_dic)
+        therestx, theresty, thecoordinates = boundary_word_plot(dictionary, distance_list, boundary)
+        sentences = source_of_words(thecoordinates, sent_dic)
 
-        print("x co ordinates outside the boundary")
-        print(therestx)
-        print("y co ordinates outside the boundary")
-        print(theresty)
-        print("the remaining sentences")
-        print(sentences)
+        # print("x co ordinates outside the boundary")
+        # print(therestx)
+        # print("y co ordinates outside the boundary")
+        # print(theresty)
+        # print("the remaining sentences")
+        # print(sentences)
         # axes1.scatter(therestx,theresty, cmap='Paired')
         axes1.clear()
         axes1.scatter(therestx,theresty, cmap='Paired')
         word_canvas.draw()
     def window_click(event):
-        print('you pressed', event.button, event.xdata, event.ydata)
+        # print('you pressed', event.button, event.xdata, event.ydata)
         xpos, ypos = event.xdata, event.ydata
         for key in sent_dic:
             for values in sent_dic[key]:
                 if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
-                    print(key)
+                    # print(key)
                     text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
                     word_canvas.draw()
 
-    mapx,mapy = plottingdesiredword(labels, tuplex, tupley, text_input.get())
-    dictionary, distance_list = dictionaryofeuclideandistanceandtheircoordinates(labels, tuplex, tupley, text_input.get())
+    mapx,mapy = word_plot(labels, tuplex, tupley, text_input.get())
+    dictionary, distance_list = distance_x_y(labels, tuplex, tupley, text_input.get())
     maximumdistance = max(distance_list)
 
     window = Toplevel()
@@ -511,39 +511,39 @@ class Root(Tk):
     def matplotCanvas(self):
         # global arr
         global labels, sent_dic, all_values
-        for text in adding_special_tokens(args.text1):
+        for text in add_sp_token(args.text1):
             # method(text)
-            print(text)
+            # print(text)
             token_embeddings, re_tokenized_text, segments_ids = method(text)
 # print(re_tokenized_text)
 
             # layers(token_embeddings,args.start_layer, args.end_layer)
             token_vecs_sum = layers(token_embeddings, args.start_layer, args.end_layer)
 #     for i,x in enumerate(re_tokenized_text):
-#         print (i,x)
+        # print (i,x)
 
             arr = [t.numpy() for t in token_vecs_sum]
 
             # re_tokenized_text = another_clean(re_tokenized_text)
             tsne(re_tokenized_text,arr,text, segments_ids)
 
-            print("RETOKENIZED")
-            print(re_tokenized_text)
+            # print("RETOKENIZED")
+            # print(re_tokenized_text)
 
             # for i in re_tokenized_text:
             #     all_text.append(i)
 
 
 
-            print("RETOKENIZED")
-            print(re_tokenized_text)
-            print(labels)
+            # print("RETOKENIZED")
+            # print(re_tokenized_text)
+            # print(labels)
 
         # print("All text")
         # print(all_text)
 
-        print("All Values: ")
-        print(all_values)
+        # print("All Values: ")
+        # print(all_values)
 
 
 
@@ -551,7 +551,7 @@ class Root(Tk):
 # mouse click event starts here
         # global sent_dic = dict()
         def on_click(event):
-            print('you pressed', event.button, event.xdata, event.ydata)
+            # print('you pressed', event.button, event.xdata, event.ydata)
             self.check = 5
             axes = plt.gca()
             left, right = axes.get_xlim()
@@ -582,7 +582,7 @@ class Root(Tk):
             for key in sent_dic:
                 for values in sent_dic[key]:
                     if abs(xpos - values[0]) < 5 and abs(ypos - values[1]) < 5:
-                        print(key)
+                        # print(key)
                         self.text_show = plt.text(event.xdata, event.ydata, key, fontsize=5, fontproperties=prop)
                         canvas.draw()
                         # key_press_handler(event, canvas, toolbar)
@@ -601,14 +601,14 @@ class Root(Tk):
         y = []
 
         count = 0
-        print("k")
+        # print("k")
         removing_cls_sep(labels, all_values)
         for t in aff:
             j = t
             for k in j:
                 x.append(k[0])
                 y.append(k[1])
-        #         print(k[0])
+                # print(k[0])
 
                 count = count + 1
         """DBSCAN commented"""
@@ -632,7 +632,7 @@ class Root(Tk):
         y_pred = KMeans(n_clusters=8, random_state=0).fit_predict(np_flat_list)
         axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
         n_clusters_ = len(set(y_pred)) - (1 if -1 in labels else 0)
-        print("Estimated number of clusters: %d" % n_clusters_)
+        # print("Estimated number of clusters: %d" % n_clusters_)
 
 
         """kMeans clustering ends here"""
