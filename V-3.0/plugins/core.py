@@ -127,6 +127,29 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
 
     return labels, token_values
 
+def removing_cls_sep(all_label, all_values):
+    temp = np.array(all_values)
+    flat_values = temp.flatten()
+    removed_token = []
+    for i in flat_values:
+        i = i[1:-1]
+        removed_token.append(i)
+
+    count = 0
+    index = []
+    for token in text:
+        if token == "[CLS]":
+            index.append(count)
+        if token == "[SEP]":
+            index.append(count)
+        count += 1
+
+    for i in sorted(index, reverse = True):
+        del all_label[i]
+
+    return all_label, removed_token
+
+
 def line_feed(text):
     all_label = []
     all_values = []
@@ -141,6 +164,8 @@ def line_feed(text):
 
         all_label.append(labels)
         all_values.append(token_values)
+
+    all_label, all_values = removing_cls_sep(all_label,all_values)
 
     return all_label, all_values
 
