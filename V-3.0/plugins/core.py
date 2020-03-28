@@ -21,12 +21,11 @@ from sklearn.neighbors import DistanceMetric
 
 # for argparse
 text = ''
-perplexity = 0
+perplexity = 3
 start_layer = 0
 end_layer = 0
 # for argparse
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
-model = BertModel.from_pretrained('bert-base-multilingual-cased')
 
 sent_dic = dict()
 
@@ -42,31 +41,6 @@ def add_sp_token(text):
         line_list.append(marked_text)
 
     return line_list
-def BERT_initializer(line1):
-
-
-    tokenized_text = tokenizer.tokenize(line1)
-    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-
-    segments_ids = [1] * len(tokenized_text)
-
-    tokens_tensor = torch.tensor([indexed_tokens])
-    segments_tensors = torch.tensor([segments_ids])
-
-
-
-                                            # Put the model in "evaluation" mode, meaning feed-forward operation.
-    model.eval()
-                                            # Predict hidden states features for each layer
-    with torch.no_grad():
-        encoded_layers, _ = model(tokens_tensor, segments_tensors)
-
-
-    token_embedding = token_embeddings(encoded_layers)
-
-
-
-    return token_embedding, tokenized_text, segments_ids
 
 def token_embeddings(encoded_layers):
 
@@ -80,6 +54,31 @@ def token_embeddings(encoded_layers):
 
     return token_embeddings
 
+def BERT_initializer(line1):
+
+
+    tokenized_text = tokenizer.tokenize(line1)
+    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+
+    segments_ids = [1] * len(tokenized_text)
+
+    tokens_tensor = torch.tensor([indexed_tokens])
+    segments_tensors = torch.tensor([segments_ids])
+
+
+    model = BertModel.from_pretrained('bert-base-multilingual-cased')
+                                            # Put the model in "evaluation" mode, meaning feed-forward operation.
+    model.eval()
+                                            # Predict hidden states features for each layer
+    with torch.no_grad():
+        encoded_layers, _ = model(tokens_tensor, segments_tensors)
+
+
+    token_embedding = token_embeddings(encoded_layers)
+
+
+    return token_embedding, tokenized_text, segments_ids
+
 
 def BERT_layers(token_embeddings,start_layer, end_layer):
     # global token_vecs_sum
@@ -91,7 +90,7 @@ def BERT_layers(token_embeddings,start_layer, end_layer):
         # For each token in the sentence...
     for token in token_embeddings:
 
-        sum_vec = torch.sum(token[start_layer:end_layer], dim=0)
+        sum_vec = torch.sum(token[-4:], dim=0)
         # Use `sum_vec` to represent `token`.
 
         token_vecs_sum.append(sum_vec)
@@ -108,7 +107,7 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
         tokens.append(tensor_to_numpy[i])
         labels.append(x)
 
-    tsne_model = TSNE(perplexity = perplexity, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
+    tsne_model = TSNE(perplexity = 3, n_components=2, init='pca', n_iter=5000, random_state=23, verbose = 2)
     new_values = tsne_model.fit_transform(tokens)
     temp_values = (new_values.tolist())
 
@@ -127,27 +126,30 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
 
     return labels, token_values
 
+
 def removing_cls_sep(all_label, all_values):
     temp = np.array(all_values)
     flat_values = temp.flatten()
     removed_token = []
+
+    print("before")
+    print(flat_values)
     for i in flat_values:
         i = i[1:-1]
         removed_token.append(i)
+    print("before")
+    print(flat_values)
+    removed_label = []
+    for list_t in all_label:
+        for token in list_t:
+            if token == "[CLS]":
+                continue
+            elif token =="[SEP]":
+                continue
+            else:
+                removed_label.append(token)
 
-    count = 0
-    index = []
-    for token in text:
-        if token == "[CLS]":
-            index.append(count)
-        if token == "[SEP]":
-            index.append(count)
-        count += 1
-
-    for i in sorted(index, reverse = True):
-        del all_label[i]
-
-    return all_label, removed_token
+    return removed_label, removed_token
 
 
 def line_feed(text):
@@ -158,6 +160,9 @@ def line_feed(text):
         token_embeddings, tokenized_text, segments_ids = BERT_initializer(text)
 
         token_vecs_sum = BERT_layers(token_embeddings, start_layer, end_layer)
+
+        print(token_vecs_sum)
+
         tensor_to_numpy = [t.numpy() for t in token_vecs_sum]
 
         labels, token_values = tsne(tokenized_text,tensor_to_numpy,text, segments_ids)

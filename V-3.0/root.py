@@ -29,7 +29,7 @@ class Root(Tk):
         plugin = plugin_module.Plugin(args_dict)
 
         label, values = plugin.initial()
-        print(label)
+        # print(values)
 
         """plotting starts here"""
 
