@@ -24,15 +24,14 @@ class Root(Tk):
         print(plugin_module)
         plugin = plugin_module.Plugin(args_dict)
 
-        # w = Label(self, text=plugin.matplotCanvas(self))
-        # w.pack()
+        label, values = plugin.initial()
+        print(label)
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument("text",type=str,help="corpus name")
-    # parser.add_argument("text2",type=str,help="Second text to plot")
     parser.add_argument("--start_layer",type=int,default=8,help="starting layer number to plot")
     parser.add_argument("--end_layer",type=int,default=12,help="ending layer number to plot")
     parser.add_argument("--perplexity",type=int,default=3,help="number of nearest neighbour")

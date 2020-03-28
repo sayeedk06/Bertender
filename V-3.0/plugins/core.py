@@ -128,7 +128,8 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
     return labels, token_values
 
 def line_feed(text):
-    global labels, sent_dic, all_values
+    all_label = []
+    all_values = []
     for text in add_sp_token(text):
         # print(text)
         token_embeddings, tokenized_text, segments_ids = BERT_initializer(text)
@@ -137,13 +138,23 @@ def line_feed(text):
         tensor_to_numpy = [t.numpy() for t in token_vecs_sum]
 
         labels, token_values = tsne(tokenized_text,tensor_to_numpy,text, segments_ids)
-        print(labels)
+
+        all_label.append(labels)
+        all_values.append(token_values)
+
+    return all_label, all_values
+
 class Plugin:
     def __init__(self,*args):
-        print('Summation plugin activated')
+        print('\t\n****Summation plugin activated****\n')
+        self.text = ""
         for i in args:
-            text = i['text']
+            self.text = i['text']
             perplexity = i['perplexity']
             start_layer = i['start_layer']
             end_layer = i['end_layer']
-        line_feed(text)
+
+    def initial(self):
+        label, values = line_feed(self.text)
+
+        return label, values
