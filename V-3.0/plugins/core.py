@@ -16,14 +16,13 @@ from matplotlib.animation import FuncAnimation
 from sklearn.neighbors import DistanceMetric
 
 # for argparse
-text = ''
+# text = ''
 perplexity = 0
 start_layer = 0
 end_layer = 0
 # for argparse
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
-# sent_dic = dict()
 
 def add_sp_token(text):
 
@@ -79,8 +78,6 @@ def BERT_initializer(line1):
 def BERT_layers(token_embeddings,start_layer, end_layer):
     # global token_vecs_sum
     token_vecs_sum = []
-
-
         # Stores the token vectors, with shape [22 x 768]
 
         # For each token in the sentence...
@@ -90,7 +87,6 @@ def BERT_layers(token_embeddings,start_layer, end_layer):
         # Use `sum_vec` to represent `token`.
 
         token_vecs_sum.append(sum_vec)
-    # print ('Shape is: %d x %d' % (len(token_vecs_sum), len(token_vecs_sum[0])))
 
     return token_vecs_sum
 def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
@@ -148,6 +144,34 @@ def removing_cls_sep(all_label, all_values):
 
     return removed_label, removed_token
 
+def average_embeddings(tokens, embedding_vec,segment_ids):
+    token_filter= []
+    prev = ''
+    count = 0
+    track_list = []
+    token_counter = 1
+    for token in zip(tokens,embedding_vec):
+        if token[0].find('#') == -1:
+            if(count != 0):
+                token_filter.append(prev)
+            prev = token[0]
+            if (token_counter > 1):
+                track_list[len(track_list)-1] = torch.div(track_list[len(track_list)-1],token_counter)
+            track_list.append(token[1])
+            token_counter = 1
+            if (count == (len(tokens)-1)):
+                token_filter.append(prev)
+        else:
+            track_list[len(track_list)-1] = track_list[len(track_list)-1] + token[1]
+            prev = prev + token[0].replace('#',"")
+            token_counter += 1
+        count += 1
+
+    sanity_check = len(segment_ids)-len(token_filter)
+    for i in range(sanity_check):
+        segment_ids.pop()
+
+    return token_filter,track_list,segment_ids
 
 def line_feed(text):
     all_label = []
@@ -159,11 +183,11 @@ def line_feed(text):
 
         token_vecs_sum = BERT_layers(token_embeddings, start_layer, end_layer)
 
-        print(token_vecs_sum)
+        filtered_token, filtered_embed, filtered_segment_ids = average_embeddings(tokenized_text,token_vecs_sum,segments_ids)
 
-        tensor_to_numpy = [t.numpy() for t in token_vecs_sum]
+        tensor_to_numpy = [t.numpy() for t in filtered_embed]
 
-        labels, token_values, dic = tsne(tokenized_text,tensor_to_numpy,text, segments_ids)
+        labels, token_values, dic = tsne(filtered_token,tensor_to_numpy,text, filtered_segment_ids)
 
         sent_dic.update(dic)
         all_label.append(labels)
