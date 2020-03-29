@@ -12,22 +12,18 @@ import matplotlib.font_manager as fm
 from sklearn.manifold import TSNE
 import seaborn as sns
 from matplotlib.animation import FuncAnimation
-
-#For clustering
-from sklearn.cluster import DBSCAN
-from sklearn.cluster import KMeans
 #euclideandistance
 from sklearn.neighbors import DistanceMetric
 
 # for argparse
 text = ''
-perplexity = 3
+perplexity = 0
 start_layer = 0
 end_layer = 0
 # for argparse
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 
-sent_dic = dict()
+# sent_dic = dict()
 
 def add_sp_token(text):
 
@@ -102,6 +98,7 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
     tokens = []
     labels = []
     token_values = []
+    dic = dict()
     for i,x in enumerate(tokenized_text):
 
         tokens.append(tensor_to_numpy[i])
@@ -121,10 +118,10 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
     # global segments_ids
     for i in segments_ids:
         if(i == 1):
-            sent_dic.setdefault(text, []).append(newlist[track])
+            dic.setdefault(text, []).append(newlist[track])
             track = track + 1
 
-    return labels, token_values
+    return labels, token_values, dic
 
 
 def removing_cls_sep(all_label, all_values):
@@ -155,6 +152,7 @@ def removing_cls_sep(all_label, all_values):
 def line_feed(text):
     all_label = []
     all_values = []
+    sent_dic = dict()
     for text in add_sp_token(text):
         # print(text)
         token_embeddings, tokenized_text, segments_ids = BERT_initializer(text)
@@ -165,14 +163,15 @@ def line_feed(text):
 
         tensor_to_numpy = [t.numpy() for t in token_vecs_sum]
 
-        labels, token_values = tsne(tokenized_text,tensor_to_numpy,text, segments_ids)
+        labels, token_values, dic = tsne(tokenized_text,tensor_to_numpy,text, segments_ids)
 
+        sent_dic.update(dic)
         all_label.append(labels)
         all_values.append(token_values)
 
     all_label, all_values = removing_cls_sep(all_label,all_values)
 
-    return all_label, all_values
+    return all_label, all_values, sent_dic
 
 class Plugin:
     def __init__(self,*args):
@@ -185,6 +184,6 @@ class Plugin:
             end_layer = i['end_layer']
 
     def initial(self):
-        label, values = line_feed(self.text)
+        label, values, dict = line_feed(self.text)
 
-        return label, values
+        return label, values,dict
