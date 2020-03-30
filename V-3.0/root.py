@@ -179,6 +179,9 @@ def second_window(tuplex,tupley,labels,sent_dic,text_input):
     word_canvas.mpl_connect('button_press_event', window_click)
     plot_widget = word_canvas.get_tk_widget()
     plot_widget.pack(side = TOP, fill = BOTH, expand = True)
+    toolbar = NavigationToolbar2Tk(word_canvas, window)
+    toolbar.update()
+    toolbar.pack()
 
     help = Label(window, text="Slide to set boundary",font=("Helvetica", 16))
     help.pack()
