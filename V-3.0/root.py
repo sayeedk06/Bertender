@@ -14,7 +14,7 @@ import importlib
 from sklearn.neighbors import DistanceMetric
 dist = DistanceMetric.get_metric('euclidean')
 
-PLUGIN_NAME = "plugins.core"
+PLUGIN_NAME = "plugins.core_3"
 CLUSTER_PLUGIN = "plugins.core2_cluster"
 plugin_module = importlib.import_module(PLUGIN_NAME, '.')
 plugin_module_2 = importlib.import_module(CLUSTER_PLUGIN, '.')
