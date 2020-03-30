@@ -20,7 +20,18 @@ plugin_module = importlib.import_module(PLUGIN_NAME, '.')
 plugin_module_2 = importlib.import_module(CLUSTER_PLUGIN, '.')
 
 
+#Finding the remaining sentences starts here
 
+def source_of_words(the_remaining_coordinates, sentence_dictionary):
+    sentences = []
+    for key, value in sentence_dictionary.items():
+        for i in value:
+            for j in the_remaining_coordinates:
+                if i == j:
+                    sentences.append(key)
+    return sentences
+
+#Finding the remaining sentences ends here
 
 #Finding word instances starts here
 def word_plot(label,x,y,word):
@@ -133,7 +144,7 @@ def boundary_word_plot(dictionary, distance_list, boundary):
 #Plotting the words outside a certain boundary ends here
 
 #SECONDARY WINDOW STARTS here
-def second_window(tuplex,tupley,labels,text_input):
+def second_window(tuplex,tupley,labels,sent_dic,text_input):
     prop = fm.FontProperties(fname='kalpurush.ttf')
     def getboundary(event):
         # print(slider.get())
@@ -287,7 +298,7 @@ class Root(Tk):
         canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
         text_input = Entry(self)
         text_input.pack(side = LEFT)
-        input_button=Button(self, height=1, width=10, text="Find", command=lambda: second_window(x,y,label,text_input))
+        input_button=Button(self, height=1, width=10, text="Find", command=lambda: second_window(x,y,label,sent_dic,text_input))
         input_button.pack(side = LEFT)
 
 if __name__ == '__main__':
