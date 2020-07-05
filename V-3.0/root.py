@@ -6,6 +6,9 @@ import numpy as np
 import argparse
 #visualization
 import matplotlib.pyplot as plt
+from bokeh.plotting import figure, output_file, show
+from bokeh.models import ColumnDataSource,LabelSet,HoverTool
+import bokeh
 #font
 import matplotlib.font_manager as fm
 # import pyglet
@@ -76,7 +79,6 @@ def second_window(tuplex,tupley,labels,sent_dic,text_input):
 
     word_canvas.draw()
 #SENCONDARY WINDOW ENDS HERE
-
 
 
 
@@ -158,39 +160,83 @@ class Root(Tk):
         flat_list = [item for sublist in values for item in sublist]
         np_flat_list = np.array(flat_list)
 
-        f, axes = plt.subplots(nrows = 2, ncols=1)
+        # f, axes = plt.subplots(nrows = 2, ncols=1)
 
-        y_pred = plugin2.initial(np_flat_list,label)
+        y_pred, centers = plugin2.initial(np_flat_list,label)
 
-        axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+        # axes[0].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+        # axes[0].scatter(centers[:, 0], centers[:, 1],c='black', alpha=0.5)
+        # for i in range(len(label)):
+        #
+        #     p = axes[1].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+        #     axes[1].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
+        #     plt.annotate(label[i],
+        #                     xy=(x[i], y[i]),
+        #                     xytext=(0, 0),
+        #                     textcoords='offset points',
+        #                     ha='right',
+        #                    fontsize=19, fontproperties=prop)
+        #
+        #
+        # """UI work in tkinter and integration of tkinter
+        #  with matplotlib"""
+        # canvas = FigureCanvasTkAgg(f, self)
+        # f.canvas.mpl_connect('button_press_event', on_click)
+        # f.canvas.mpl_connect('button_release_event', off_click)
+        # canvas.draw()
+        # toolbar = NavigationToolbar2Tk(canvas, self)
+        # toolbar.update()
+        # toolbar.pack()
+        #
+        # canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
+        #
+        # text_input = Entry(self)
+        # text_input.pack(side = LEFT)
+        # input_button=Button(self, height=1, width=10, text="Find", command=lambda: second_window(x,y,label,sent_dic,text_input))
+        # input_button.pack(side = LEFT)
+        count = 0
+        color_palette = {}
+        for i in bokeh.palettes.viridis(8):
+            color_palette[count] = i
+            count +=1
+        colors = []
+        for i in y_pred:
+            if i in color_palette.keys():
+                colors.append(color_palette[i])
 
-        for i in range(len(label)):
 
-            p = axes[1].scatter(np_flat_list[:, 0], np_flat_list[:, 1],c=y_pred, cmap='Paired')
-            plt.annotate(label[i],
-                            xy=(x[i], y[i]),
-                            xytext=(0, 0),
-                            textcoords='offset points',
-                            ha='right',
-                           fontsize=19, fontproperties=prop)
+        source = ColumnDataSource(data={
+                'x': np_flat_list[:, 0],
+                'y': np_flat_list[:, 1],
+                'words': label,
+                'cluster_color': colors,
+                'sentence' : sent_dic
+        })
+        output_file("output.html")
 
+        # create a new plot with a title and axis labels
+        labels = LabelSet(
+            x='x',
+            y='y',
+            text='words',
+            level='glyph',
+            x_offset=5,
+            y_offset=5,
+            source=source,
+            render_mode='canvas')
 
-        """UI work in tkinter and integration of tkinter
-         with matplotlib"""
-        canvas = FigureCanvasTkAgg(f, self)
-        f.canvas.mpl_connect('button_press_event', on_click)
-        f.canvas.mpl_connect('button_release_event', off_click)
-        canvas.draw()
-        toolbar = NavigationToolbar2Tk(canvas, self)
-        toolbar.update()
-        toolbar.pack()
+        p = figure(title="BERTENDER", x_axis_label='x', y_axis_label='y',plot_width=1400, plot_height=920)
+        hover=HoverTool(tooltips=[
+        ("index", "$index"),
+        ("(x,y)", "($x, $y)"),
+        ("Source text:", "@sentence")
+        ])
+        p.circle('x', 'y', source=source, fill_color='cluster_color', size=10,alpha=0.8)
+        p.circle(centers[:, 0], centers[:, 1], fill_color='black', size=10, alpha=0.2)
+        p.add_layout(labels)
+        p.add_tools(hover)
+        show(p)
 
-        canvas.get_tk_widget().pack(side = BOTTOM, fill = BOTH, expand = True)
-
-        text_input = Entry(self)
-        text_input.pack(side = LEFT)
-        input_button=Button(self, height=1, width=10, text="Find", command=lambda: second_window(x,y,label,sent_dic,text_input))
-        input_button.pack(side = LEFT)
 
 if __name__ == '__main__':
 

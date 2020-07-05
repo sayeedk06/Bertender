@@ -94,7 +94,7 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
     tokens = []
     labels = []
     token_values = []
-    dic = dict()
+    # dic = dict()
     for i,x in enumerate(tokenized_text):
 
         tokens.append(tensor_to_numpy[i])
@@ -112,12 +112,12 @@ def tsne(tokenized_text,tensor_to_numpy,text, segments_ids):
     track = 0
     newlist = new_values.tolist()
     # global segments_ids
-    for i in segments_ids:
-        if(i == 1):
-            dic.setdefault(text, []).append(newlist[track])
-            track = track + 1
+    # for i in segments_ids:
+    #     if(i == 1):
+    #         dic.setdefault(text, []).append(newlist[track])
+    #         track = track + 1
 
-    return labels, token_values, dic
+    return labels, token_values
 
 
 def removing_cls_sep(all_label, all_values):
@@ -172,7 +172,8 @@ def average_embeddings(tokens, embedding_vec,segment_ids):
 def line_feed(text):
     all_label = []
     all_values = []
-    sent_dic = dict()
+    # sent_dic = dict()
+    sent_list = []
     for text in add_sp_token(text):
         # print(text)
         token_embeddings, tokenized_text, segments_ids = BERT_initializer(text)
@@ -183,15 +184,18 @@ def line_feed(text):
 
         tensor_to_numpy = [t.numpy() for t in filtered_embed]
 
-        labels, token_values, dic = tsne(filtered_token,tensor_to_numpy,text, filtered_segment_ids)
+        labels, token_values = tsne(filtered_token,tensor_to_numpy,text, filtered_segment_ids)
 
-        sent_dic.update(dic)
+        for i in labels[:-2]:
+            sent_list.append(text)
+
+        # sent_dic.update(dic)
         all_label.append(labels)
         all_values.append(token_values)
 
     all_label, all_values = removing_cls_sep(all_label,all_values)
 
-    return all_label, all_values, sent_dic
+    return all_label, all_values, sent_list
 
 class Plugin:
     def __init__(self,*args):
